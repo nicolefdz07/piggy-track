@@ -1,0 +1,37 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import "./index.css";
+import Layout from "./components/Layout"
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
+import Budget from "./pages/Budget.tsx";
+import Transactions from "./pages/Transactions.tsx";
+import TransactionDetails from "./pages/TransactionDetails.tsx";
+import AddTrans from "./pages/AddTrans.tsx";
+import CreateBudget from "./pages/CreateBudget.tsx";
+import EditBudget from "./pages/EditBudget.tsx";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        
+        <Route element={<Layout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="budget" element={<Budget />} />
+          <Route path="budget/create" element={<CreateBudget />} />
+          <Route path="budget/edit" element={<EditBudget />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="transactions/details" element={<TransactionDetails />} />
+          <Route path="transactions/add" element={<AddTrans />} />
+        </Route>
+
+        <Route path="/" element={<Login />} />
+        <Route path="signup" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
