@@ -6,16 +6,16 @@ import type { ReactNode } from "react";
 interface AuthContextType {
   session: Session | null;
   setSession: React.Dispatch<React.SetStateAction<Session | null>>;
-  signInUser: (email: string, password: string) => Promise<{success: boolean; data?: any; error?: string}>;
+  signInUser: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
+  signOutUser: () => Promise<{ success: boolean; error: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
+export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   // Auth functions (sign in, sign out, logout)
 
   // session state (user info, sign in status)
@@ -46,7 +46,6 @@ export const AuthContextProvider = ({
       setSession(session);
       console.log("session changed", session);
     });
-    
   }, []);
 
   // auth functions (sign in, sign out, logout)
@@ -61,26 +60,57 @@ export const AuthContextProvider = ({
         password: password,
       });
       // handle supabase error explicitly
-        if(error){
-          console.error("Supabase signIn error:", error.message);
-          return {success: false, error: error.message};
-        }
+      if (error) {
+        console.error("Supabase signIn error:", error.message);
+        return { success: false, error: error.message };
+      }
       // success
       console.log("supabase signIn success:", data);
-      return {success: true, data: data}
-    }catch (error: unknown) {
+      return { success: true, data: data };
+    } catch (error: unknown) {
       // unexpected error
       if (error instanceof Error) {
         console.error("Unexpected error during signIn:", error.message);
       } else {
         console.error("Unexpected error during signIn:", error);
       }
-      return {success: false, error:"Unexpected error ocurred, please try again."};
+      return {
+        success: false,
+        error: "Unexpected error ocurred, please try again.",
+      };
     }
-  }
+  };
+
+  // sign out
+  const signOutUser = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error("Supabase signOut error:", error.message);
+        return { success: false, error: error.message };
+      }
+
+      // success
+      return { success: true };
+    } catch (error: unknown) {
+      // unexpected error
+      if (error instanceof Error) {
+        console.error("Unexpected error during signOut:", error.message);
+      } else {
+        console.error("Unexpected error during signOut:", error);
+      }
+      return {
+        success: false,
+        error: "Unexpected error ocurred, please try again.",
+      };
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ session, setSession, signInUser }}>
+    <AuthContext.Provider
+      value={{ session, setSession, signInUser, signOutUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
