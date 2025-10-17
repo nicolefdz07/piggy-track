@@ -4,8 +4,35 @@ import { FaCar } from "react-icons/fa";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { MdOutlineLocalMovies } from "react-icons/md";
 import { NavLink } from "react-router-dom";
+import type { Transaction } from "../types/Types";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 export default function Transactions() {
+  const { session } = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  console.log("here should be the transactions list")
+  async function fetchTransactions() {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", session?.user.id)
+        .order("date", { ascending: false });
+
+        if(error) throw error;
+        setTransactions(data ?? [])
+        console.log('data:', data)
+        
+    }
+
+  useEffect(() => {
+    if (session) {
+      fetchTransactions();
+    }
+  }, [session]);
+
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col gap-8">

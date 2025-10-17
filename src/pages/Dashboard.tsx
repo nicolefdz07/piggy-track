@@ -1,6 +1,48 @@
+import { supabase } from "../lib/supabaseClient";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import DashboardTable from "../components/DashboardTable";
+import type { RecentTransaction } from "../types/Types";
+
+
 
 export default function Dashboard() {
+  const { session } = useAuth();
+  const [recentTransactions, setRecentTransactions] = useState<
+    RecentTransaction[]
+  >([]);
+
+  async function fetchRecentTransactions(): Promise<void> {
+    try {
+      const { data, error } = await supabase
+        .from("transactions")
+        .select(
+          `
+    date,
+    description,
+    category,
+    amount
+    `
+        )
+        .order("created_at", {
+          ascending: false,
+        })
+        .limit(6);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+      setRecentTransactions(data as RecentTransaction[]);
+      console.log('recent transactions: ', data)
+    } catch (error: any) {
+      throw new Error(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchRecentTransactions();
+  }, [session]);
+
   return (
     <>
       <section className="max-w-5xl mx-auto">
@@ -65,82 +107,15 @@ export default function Dashboard() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                    2024-03-15
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Grocery Shopping
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Food
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 ">
-                    $-120.50
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                    2024-03-15
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Rent Payment
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Housing
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 ">
-                    $-1200.50
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                    2024-03-15
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Dinner with friends
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Entertaiment
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 ">
-                    $-80.50
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                    2024-03-15
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Salary Deposit 
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Income
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-green-400 ">
-                    $5,000.50
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                    2024-03-15
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Online Shopping
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 ">
-                    Shopping
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 ">
-                    $-250.50
-                  </td>
-                </tr>
-              </tbody>
+              
+              <DashboardTable transactions={recentTransactions} />
             </table>
           </div>
           <div className="flex justify-start mt-30  ">
-            <NavLink to="/transactions/add" className="w-1/4 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center">
+            <NavLink
+              to="/transactions/add"
+              className="w-1/4 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center"
+            >
               New Transaction
             </NavLink>
           </div>

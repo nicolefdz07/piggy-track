@@ -1,0 +1,66 @@
+import { createConteext, useContext, useEffect, useState } from "react";
+import type { ReactNode} from "react"; 
+import { useAuth } from "./AuthContext";
+import { supabase } from "@supabase/auth-ui-shared";
+
+export interface Transaction {
+  id: string;
+  user_id: string;
+  amount: number;
+  category: string;
+  created_at: string;
+  date: string;
+  description: string;
+  type: "expense" | "income" | string;
+}
+
+interface TransactionsContextType {
+  transactions: Transaction[]
+  loading: boolean
+  error: string | null
+  refresh: ()=> Promise<void>
+  addTransaction: Transaction
+  removeTransaction: 
+}
+
+const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
+
+export const TransactionsProvider = ({children} : {children: ReactNode})=>{
+  const {session} = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function fetchTransactions() {
+
+    try{
+        const { data, error } = await supabase
+          .from("transactions")
+          .select("*")
+          .eq("user_id", session?.user.id)
+          .order("date", { ascending: false });ƒ
+    
+          if(error) throw error;
+          setTransactions(data ?? [])
+          console.log(data)
+        }catch(err: unknown){
+
+          setError(err instanceof Error ? err.message : String(err));
+        }finally{
+          setLoading(false);
+        }       
+      }
+  
+    useEffect(() => {
+      if (session) {
+        fetchTransactions();
+      }
+    }, [session]);
+
+    const removeTransaction = async (id: string)=>{
+      try {
+        
+      }
+    }
+
+}
