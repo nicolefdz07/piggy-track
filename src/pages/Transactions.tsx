@@ -8,6 +8,7 @@ import type { Transaction } from "../types/Types";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import TransactionsTable from "../components/TransactionsTable";
 
 export default function Transactions() {
   const { session } = useAuth();
@@ -87,7 +88,8 @@ export default function Transactions() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <TransactionsTable transactions={transactions} />
+              {/* <tbody>
                 <tr className="border-b  border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
                   <NavLink to="/transactions/details">
                     <td className="p-4">
@@ -229,7 +231,7 @@ export default function Transactions() {
                     </button>
                   </td>
                 </tr>
-              </tbody>
+              </tbody> */}
             </table>
           </div>
         </div>
