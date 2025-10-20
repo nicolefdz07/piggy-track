@@ -41,7 +41,27 @@ export default function Dashboard() {
   }
   useEffect(() => {
     fetchRecentTransactions();
-  }, [session]);
+
+    const channel = supabase.channel('transactions_changes').on(
+      'postgres_changes',
+      {
+       event: '*', 
+          schema: 'public',
+          table: 'transactions'
+        },
+        (payload) => {
+          // Action
+          fetchRecentTransactions();
+          console.log("payload", payload.new);
+          
+        })
+
+      .subscribe();
+
+      return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <>

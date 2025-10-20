@@ -1,43 +1,127 @@
-import { FaRegSave } from "react-icons/fa";
-import { FaArrowUp } from "react-icons/fa";
-import { FaArrowDown } from "react-icons/fa";
-
+import { useActionState, useState } from "react";
+import { FaArrowDown, FaArrowUp, FaRegSave } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
+import type { Transaction } from "../types/Types";
+import { useNavigate } from "react-router-dom";
 
 export default function AddTrans() {
+  const { session } = useAuth();
+  const [type, setType] = useState<"income" | "expense">("income");
+  const navigate = useNavigate();
+  const userId = session?.user.id || "";
+  const [error, submitAction, isPending] = useActionState(
+    async (prevState, formData: FormData) => {
+      if (!userId) {
+        console.error("No user logged in");
+        return new Error("User not logged in");
+      }
+
+      try {
+        const newTransaction: Omit<Transaction, "id"> = {
+          user_id: userId,
+          type: String(formData.get("type") ?? "expense") as
+            | "income"
+            | "expense",
+          amount: parseFloat(String(formData.get("amount") ?? "0")) || 0,
+          category: String(formData.get("category") ?? ""),
+          date: String(
+            formData.get("date") ?? new Date().toISOString().slice(0, 10)
+          ),
+          description: (formData.get("description") as string) || undefined,
+        };
+
+        console.log("Inserting transaction:", newTransaction);
+
+        // return after inserting into supabase
+        const { data, error: insertError } = await supabase
+          .from("transactions")
+          .insert([newTransaction])
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error inserting transaction:", insertError);
+          return new Error("Failed to add transaction");
+        }
+
+        console.log("Transaction added:", data);
+        navigate("/transactions");
+        return data;
+      } catch (err: unknown) {
+        console.error("Unexpected error adding transaction:", err);
+        if (err instanceof Error) return err;
+        return new Error("Unknown error");
+      }
+    },
+    null // initial state
+  );
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
       <div className="max-w-xl mx-auto">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold tracking-tight text-white">Add Transaction</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-white">
+            Add Transaction
+          </h2>
           <p className="text-gray-400">
             Fill in the details to record a new transaction.
           </p>
         </div>
-        <form className="space-y-6">
+        <form action={submitAction} className="space-y-6">
+          {/* Hidden input for user_id */}
+          {userId && <input type="hidden" name="user_id" value={userId} />}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2 text-white" htmlFor="type">
+              <label
+                className="block text-sm font-medium mb-2 text-white"
+                htmlFor="type"
+              >
                 Type
               </label>
               <div className="flex items-center space-x-2">
-                <button
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl py-3 px-4 bg-[#129EE4] text-white font-semibold text-sm"
-                  type="button"
+                <label
+                  htmlFor="income"
+                  className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3 px-4 font-semibold text-sm cursor-pointer transition-colors duration-300 ${
+                    type === "income"
+                      ? "bg-[#129EE4] text-white"
+                      : "bg-[#1F2E36] text-gray-300"
+                  }`}
                 >
-                  <span className="">
-                    <FaArrowDown className="text-white text-sm"/>
-                  </span>
+                  <input
+                    type="radio"
+                    id="income"
+                    name="type"
+                    value="income"
+                    checked={type === "income"}
+                    onChange={() => setType("income")}
+                    className="hidden"
+                    disabled={isPending}
+                  />
+                  <FaArrowDown className="text-white text-sm" />
                   <span>Income</span>
-                </button>
-                <button
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl py-3 px-4 bg-[#1F2E36] hover:bg-primary/10 text-white font-semibold text-sm transition-colors"
-                  type="button"
+                </label>
+                <label
+                  htmlFor="expense"
+                  className={`w-full flex items-center justify-center gap-2 rounded-2xl py-3 px-4 font-semibold text-sm cursor-pointer transition-colors duration-300 ${
+                    type === "expense"
+                      ? "bg-red-500 text-white"
+                      : "bg-[#1F2E36] text-gray-300"
+                  }`}
                 >
-                  <span className="material-symbols-outlined text-base">
-                    <FaArrowUp className="text-white text-sm"/>
-                  </span>
+                  <input
+                    type="radio"
+                    id="expense"
+                    name="type"
+                    value="expense"
+                    checked={type === "expense"}
+                    onChange={() => setType("expense")}
+                    className="hidden"
+                    disabled={isPending}
+                  />
+                  <FaArrowUp className="text-white text-sm" />
                   <span>Expense</span>
-                </button>
+                </label>
               </div>
             </div>
             <div>
@@ -57,6 +141,7 @@ export default function AddTrans() {
                   name="amount"
                   placeholder="0.00"
                   type="number"
+                  disabled={isPending}
                 />
               </div>
             </div>
@@ -72,6 +157,8 @@ export default function AddTrans() {
               className="form-select w-full py-3 px-4 rounded-2xl border-none bg-[#1F2E36] focus:ring-2 focus:ring-[#129EE4] focus:ring-opacity-50 focus:outline-none text-white"
               id="category"
               name="category"
+              required
+              disabled={isPending}
             >
               <option>Food &amp; Dining</option>
               <option>Transportation</option>
@@ -81,15 +168,19 @@ export default function AddTrans() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2 text-white" htmlFor="date">
+            <label
+              className="block text-sm font-medium mb-2 text-white"
+              htmlFor="date"
+            >
               Date
             </label>
             <input
               className="w-full py-3 px-4 rounded-2xl border-none bg-[#1F2E36] focus:ring-2 focus:ring-[#129EE4] focus:ring-opacity-50 focus:outline-none text-white"
               id="date"
               name="date"
+              required
               type="date"
-              value="2024-07-26"
+              disabled={isPending}
             />
           </div>
           <div>
@@ -97,8 +188,7 @@ export default function AddTrans() {
               className="block text-sm font-medium mb-2 text-white"
               htmlFor="description"
             >
-              Description{" "}
-              <span className="text-gray-400 ">(optional)</span>
+              Description <span className="text-gray-400 ">(optional)</span>
             </label>
             <textarea
               className="w-full p-4 rounded-2xl border-none bg-[#1F2E36] focus:ring-2 focus:ring-[#129EE4] focus:ring-opacity-50 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-subtle-dark text-white"
@@ -106,17 +196,19 @@ export default function AddTrans() {
               name="description"
               placeholder="e.g., Groceries from the market"
               rows={3}
+              disabled={isPending}
             ></textarea>
           </div>
           <div className="pt-2">
             <button
               className="w-full bg-[#129EE4] text-white font-bold py-4 px-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 flex items-center justify-center gap-2"
               type="submit"
+              disabled={isPending}
             >
               <span className="material-symbols-outlined">
-                <FaRegSave className="text-white text-xl"/>
+                <FaRegSave className="text-white text-xl" />
               </span>
-              <span>Save Transaction</span>
+              <span>{isPending ? "Saving..." : "Save Transaction"}</span>
             </button>
           </div>
         </form>
