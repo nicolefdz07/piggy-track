@@ -1,8 +1,28 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { MdWarningAmber } from "react-icons/md";
+import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import TransactionsContext from "../context/TransactionsContext";
 
 export default function TransactionDetails() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const context = useContext(TransactionsContext);
+  if (!context) {
+    return null;
+  }
+  
+  const { transactions } = context;
+
+  const transaction = transactions.find((tx) => tx.id === id);
+
+  // useEffect(() => {
+  //   const load = async () => {
+  //     await fetchTransactionById(id);
+  //   };
+  //   load();
+  // }, [id, fetchTransactionById]);
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-2xl mx-auto">
@@ -26,14 +46,14 @@ export default function TransactionDetails() {
                   <p className="text-sm text-slate-500 dark:text-slate-400">
                     Amount
                   </p>
-                  <p className="text-2xl font-bold text-[#129EE4]">$25.00</p>
+                  <p className="text-2xl font-bold text-[#129EE4]">${transaction?.amount}</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-500 dark:text-slate-400">
                     Date
                   </p>
                   <p className="font-semibold text-slate-800 dark:text-slate-200">
-                    July 15, 2024
+                    {new Date(transaction?.date || "").toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -42,23 +62,23 @@ export default function TransactionDetails() {
                   Category
                 </p>
                 <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  Groceries
+                  {transaction?.category}
                 </p>
               </div>
-              <div>
+              {/* <div>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Account
                 </p>
                 <p className="font-semibold text-slate-800 dark:text-slate-200">
                   Checking Account
                 </p>
-              </div>
+              </div> */}
               <div className="md:col-span-3">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Description
                 </p>
                 <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  Weekly grocery shopping
+                  {transaction?.description}
                 </p>
               </div>
             </div>

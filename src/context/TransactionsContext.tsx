@@ -18,6 +18,7 @@ interface TransactionsContextType {
   transactions: Transaction[]
   loading: boolean
   error: string | null
+  fetchTransactionById: (id: string) => Promise<Transaction | undefined>
   
   
 }
@@ -57,10 +58,31 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
       }
     }, [session]);
 
+    async function fetchTransactionById(id: string): Promise<Transaction | undefined> {
+   try {
+    const {data, error} = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+      if(error) throw error;
+
+      return data;
+   } catch (error) {
+     console.error("Error fetching transaction:", error);
+     return undefined;
+   }
+
+    }
+
+  
+
     const transactionsCtx = {
       transactions,
       loading,
-      error
+      error,
+      fetchTransactionById
     }
 
     return (

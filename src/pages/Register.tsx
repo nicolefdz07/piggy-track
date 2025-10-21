@@ -6,7 +6,7 @@ export default function Register() {
       <div className="border border-gray-600 rounded-4xl py-10 px-8">
         <section className="flex flex-col items-center mb-6">
           <h2 className="text-3xl font-bold tracking-wide text-slate-100 text-center">
-            Create your PiggyTrack account
+            Create your Ahorra’o account
           </h2>
           <p className="text-subet-light mt-1 text-slate-400">
             Start your journey to financial wellness.

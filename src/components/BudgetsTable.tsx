@@ -69,23 +69,7 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
           <span>New Budget</span>
         </NavLink>
       </div>
-      {budgets[0] && (
-        <NavLink to="/budget/edit">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#129EE4]/20 text-[#129EE4] text-[#129EE4]">
-              <span>
-                <FaShoppingCart className="text-2xl" />
-              </span>
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-bold text-white">
-                {budgets[0].name}
-              </h3>
-              <p className="text-sm text-gray-400">Remaining: $50</p>
-            </div>
-          </div>
-        </NavLink>
-      )}
+      
       <div className="space-y-6">
         <div className="bg-[#1A2830] p-6 rounded-xl shadow-sm border border-gray-700 ">
           <div className="flex flex-col md:flex-row gap-6">

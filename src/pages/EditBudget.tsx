@@ -1,4 +1,9 @@
+import { useParams } from "react-router-dom";
+
+;
+
 export default function EditBudget() {
+  const {id} = useParams<{id: string}>();
   return (
     <main className="flex-grow container mx-auto px-6 py-12 flex justify-center">
       <div className="w-full max-w-lg">

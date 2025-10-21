@@ -26,7 +26,7 @@ export default function Header() {
       <NavLink to="/dashboard">
         <section className="flex items-center gap-2 text-2xl font-medium ">
           <FaPiggyBank className="text-5xl text-white text-[#13A4EC] bg-[#10374A] px-2 py-2 rounded-xl" />
-          PiggyTrack
+          Ahorra’o
         </section>
       </NavLink>
       <section>
