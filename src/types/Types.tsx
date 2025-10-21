@@ -15,3 +15,15 @@ export interface RecentTransaction {
   type: "income" | "expense";
   amount: number;
 }
+
+export interface Budget {
+  id: string;
+  user_id: string;
+  name: string;
+  total_amount: number;
+  amount_spent: number;
+  category: string;
+  period: string;
+   
+
+}
