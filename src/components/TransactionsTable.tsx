@@ -7,7 +7,8 @@ export default function TransactionsTable({
   transactions,
 }: {
   transactions: Transaction[];
-}) {
+})
+ {
   return (
     <tbody>
       {transactions.map((transaction, idx) => (
@@ -39,10 +40,10 @@ export default function TransactionsTable({
 
           <td
             className={`p-4 text-right font-medium ${
-              transaction.type === "expense" ? "text-red-400" : "text-green-400"
+              transaction.type === "income" ? "text-green-400" : "text-red-400"
             }`}
           >
-            {transaction.type === "expense" ? "-" : ""}
+            {transaction.type === "expense" ? "-" : "+"}
             {formatCurrency(transaction.amount)}
           </td>
 

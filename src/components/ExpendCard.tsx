@@ -4,12 +4,18 @@
 export default function ExpendCard({
   type,
   remaining,
-  icon
+  icon,
+  total_amount,
+  total_spent
 }: {
   type: string;
   remaining: number;
   icon?: React.ReactNode;
+  total_amount: number;
+  total_spent: number;
 }) {
+
+   const calcWidth = (total_spent / total_amount) * 100;
   return (
     <>
       <div className="bg-[#1A2830] p-6 rounded-xl shadow-sm border border-gray-700 ">
@@ -27,14 +33,14 @@ export default function ExpendCard({
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-sm font-medium">
-              <span className="text-white">$150 / $200</span>
-              <span className="text-gray-400">75%</span>
+              <span className="text-white">${total_spent} / ${total_amount}</span>
+              <span className="text-gray-400">{calcWidth}%</span>
             </div>
             <div className="bg-[#243641] rounded-full h-3 overflow-hidden mt-1">
               <div
                 id="progress"
                 className="bg-[#129EE4] h-3 rounded-full transition-all duration-300 ease-in-out"
-                style={{ width: "70%" }}
+                style={{ width: `${calcWidth}%` }}
               ></div>
             </div>
           </div>

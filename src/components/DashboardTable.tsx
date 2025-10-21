@@ -8,9 +8,9 @@ export default function DashboardTable({
 }) {
   return (
     <tbody className="divide-y divide-gray-700">
-      {transactions.map((transaction: RecentTransaction, idx: number) => {
+      {transactions.map((transaction: RecentTransaction) => {
         return (
-          <tr key={transaction.id ?? idx}>
+          <tr key={transaction.id}>
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
               {transaction.date}
             </td>
@@ -27,7 +27,7 @@ export default function DashboardTable({
                   : "text-red-400"
               }`}
             >
-              {formatCurrency(transaction.amount)}
+              {` ${transaction.type === "income" ? "+" : "-"}${formatCurrency(transaction.amount)}`}
             </td>
           </tr>
         );

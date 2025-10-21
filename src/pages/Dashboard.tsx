@@ -22,7 +22,9 @@ export default function Dashboard() {
     date,
     description,
     category,
-    amount
+    amount,
+    type,
+    id
     `
         )
         .order("created_at", {

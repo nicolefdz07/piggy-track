@@ -1,9 +1,9 @@
 import { useActionState, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaRegSave } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabaseClient";
 import type { Transaction } from "../types/Types";
-import { useNavigate } from "react-router-dom";
 
 export default function AddTrans() {
   const { session } = useAuth();
@@ -20,9 +20,8 @@ export default function AddTrans() {
       try {
         const newTransaction: Omit<Transaction, "id"> = {
           user_id: userId,
-          type: String(formData.get("type") ?? "expense") as
-            | "income"
-            | "expense",
+          // usa el estado local `type` que está sincronizado con los radios
+          type: type,
           amount: parseFloat(String(formData.get("amount") ?? "0")) || 0,
           category: String(formData.get("category") ?? ""),
           date: String(
@@ -165,6 +164,7 @@ export default function AddTrans() {
               <option>Shopping</option>
               <option>Utilities</option>
               <option>Entertainment</option>
+              <option>Salary</option>
             </select>
           </div>
           <div>

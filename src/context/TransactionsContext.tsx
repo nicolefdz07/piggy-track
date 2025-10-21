@@ -1,7 +1,7 @@
-import { createConteext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { ReactNode} from "react"; 
 import { useAuth } from "./AuthContext";
-import { supabase } from "@supabase/auth-ui-shared";
+import { supabase } from '../lib/supabaseClient';
 
 export interface Transaction {
   id: string;
@@ -18,9 +18,8 @@ interface TransactionsContextType {
   transactions: Transaction[]
   loading: boolean
   error: string | null
-  refresh: ()=> Promise<void>
-  addTransaction: Transaction
-  removeTransaction: 
+  
+  
 }
 
 const TransactionsContext = createContext<TransactionsContextType | undefined>(undefined);
@@ -33,12 +32,13 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
 
   async function fetchTransactions() {
 
+    if (!session) return;
     try{
         const { data, error } = await supabase
           .from("transactions")
           .select("*")
           .eq("user_id", session?.user.id)
-          .order("date", { ascending: false });ƒ
+          .order("date", { ascending: false });
     
           if(error) throw error;
           setTransactions(data ?? [])
@@ -57,10 +57,17 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
       }
     }, [session]);
 
-    const removeTransaction = async (id: string)=>{
-      try {
-        
-      }
+    const transactionsCtx = {
+      transactions,
+      loading,
+      error
     }
 
+    return (
+      <TransactionsContext.Provider value={transactionsCtx}>
+        {children}
+      </TransactionsContext.Provider>
+    )
+
 }
+export default TransactionsContext;

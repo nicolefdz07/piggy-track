@@ -9,10 +9,11 @@ export interface Transaction {
 }
 
 export interface RecentTransaction {
+  id: string;
   date: string;
   description: string;
   category: string;
-  type: "income" | "expense";
+  type?: "income" | "expense";
   amount: number;
 }
 
@@ -21,7 +22,6 @@ export interface Budget {
   user_id: string;
   name: string;
   total_amount: number;
-  amount_spent: number;
   category: string;
   period: string;
    

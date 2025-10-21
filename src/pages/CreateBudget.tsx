@@ -26,7 +26,6 @@ export default function CreateBudget() {
           user_id: userId,
           name: String(formData.get("name") ?? ""),
           total_amount: parseFloat(String(formData.get("total_amount") ?? "0")) || 0,
-          amount_spent: parseFloat(String(formData.get("amount_spent") ?? "0")) || 0,
           category: String(formData.get("category") ?? ""),
           period: String(formData.get("period") as string) || "",
         };
@@ -131,10 +130,12 @@ export default function CreateBudget() {
                   disabled={isPending}
                 >
                   <option>Select a category</option>
-                  <option>Food</option>
+                  <option>Food &amp; Dining</option>
                   <option>Transportation</option>
                   <option>Entertainment</option>
                   <option>Utilities</option>
+                  <option>Shopping</option>
+                  <option>Other</option>
                 </select>
               </div>
             </div>
