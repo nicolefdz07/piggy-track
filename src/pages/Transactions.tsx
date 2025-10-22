@@ -1,41 +1,56 @@
-import { MdOutlineRestaurant } from "react-icons/md";
-import { FaMoneyCheckAlt } from "react-icons/fa";
-import { FaCar } from "react-icons/fa";
-import { MdOutlineShoppingBag } from "react-icons/md";
-import { MdOutlineLocalMovies } from "react-icons/md";
+
 import { NavLink } from "react-router-dom";
 import type { Transaction } from "../types/Types";
-import { useEffect, useState } from "react";
+import {  useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import TransactionsTable from "../components/TransactionsTable";
+import { useSearchParams } from "react-router-dom";
 
 export default function Transactions() {
   const { session } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  console.log("here should be the transactions list")
-  async function fetchTransactions() {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", session?.user.id)
-        .order("date", { ascending: false });
+  type FilterType = Transaction["type"] | "all";
+  const type: string = searchParams.get("type") || "all";
 
-        if(error) throw error;
-        setTransactions(data ?? [])
-        console.log('data:', data)
-        
+  const displayTrans = useMemo(() => {
+    return transactions.filter((t) => {
+      const matchType = type === "all" || t.type === type;
+      return matchType;
+    });
+  }, [transactions, type]);
+
+  //  Cambiar filtro al hacer clic
+  function handleTypeChange(newType: FilterType) {
+    const params = new URLSearchParams(searchParams);
+    if (newType === "all") {
+      params.delete("type");
+    } else {
+      params.set("type", newType);
     }
+    setSearchParams(params);
+  }
+
+  console.log("here should be the transactions list");
+  async function fetchTransactions() {
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("*")
+      .eq("user_id", session?.user.id)
+      .order("date", { ascending: false });
+
+    if (error) throw error;
+    setTransactions(data ?? []);
+    console.log("data:", data);
+  }
 
   useEffect(() => {
     if (session) {
       fetchTransactions();
     }
   }, [session]);
-
-  
-  
 
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -59,13 +74,34 @@ export default function Transactions() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <button className="px-4 py-2 rounded-2xl bg-[#129EE4] text-white text-sm font-medium">
+              <button
+                onClick={() => handleTypeChange("all")}
+                className={`px-4 py-2 rounded-2xl text-sm font-medium ${
+                  type === "all"
+                    ? "bg-[#129EE4] text-white"
+                    : "bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30"
+                }`}
+              >
                 All
               </button>
-              <button className="px-4 py-2 rounded-2xl bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30 text-sm font-medium">
+              <button
+                onClick={() => handleTypeChange("income")}
+                className={`px-4 py-2 rounded-2xl text-sm font-medium ${
+                  type === "income"
+                    ? "bg-[#129EE4] text-white"
+                    : "bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30"
+                }`}
+              >
                 Income
               </button>
-              <button className="px-4 py-2 rounded-2xl bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30 text-sm font-medium">
+              <button
+                onClick={() => handleTypeChange("expense")}
+                className={`px-4 py-2 rounded-2xl text-sm font-medium ${
+                  type === "expense"
+                    ? "bg-[#129EE4] text-white"
+                    : "bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30"
+                }`}
+              >
                 Expenses
               </button>
             </div>
@@ -91,150 +127,7 @@ export default function Transactions() {
                   </th>
                 </tr>
               </thead>
-              <TransactionsTable transactions={transactions} />
-              {/* <tbody>
-                <tr className="border-b  border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
-                  <NavLink to="/transactions/details">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-danger-light dark:text-danger-dark">
-                          <MdOutlineRestaurant className="text-red-400 text-xl" />
-                        </span>
-                        <p className="font-medium text-white">
-                          Breakfast in Central Perk
-                        </p>
-                      </div>
-                    </td>
-                  </NavLink>
-
-                  <td className="p-4 text-gray-400 hidden md:table-cell">
-                    Food
-                  </td>
-                  <td className="p-4 text-gray-400 hidden lg:table-cell">
-                    July 15, 2024
-                  </td>
-                  <td className="p-4 text-right font-medium text-red-400">
-                    -$15.50
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-                      <span className="material-symbols-outlined text-base">
-                        ...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-success-light dark:text-success-dark">
-                        <FaMoneyCheckAlt className="text-green-400 text-xl" />
-                      </span>
-                      <p className="font-medium text-white">
-                        Payment from ACME Corp
-                      </p>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-400 hidden md:table-cell">
-                    Salary
-                  </td>
-                  <td className="p-4 text-gray-400 hidden lg:table-cell">
-                    July 14, 2024
-                  </td>
-                  <td className="p-4 text-right font-medium text-green-400">
-                    +$3,500.00
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-                      <span className="material-symbols-outlined text-base">
-                        ...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-danger-light dark:text-danger-dark">
-                        <FaCar className="text-red-400 text-xl" />
-                      </span>
-                      <p className="font-medium text-white">Trip in taxi</p>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-400 hidden md:table-cell">
-                    Transportation
-                  </td>
-                  <td className="p-4 text-gray-400 hidden lg:table-cell">
-                    July 12, 2024
-                  </td>
-                  <td className="p-4 text-right font-medium text-red-400">
-                    -$25.00
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-                      <span className="material-symbols-outlined text-base">
-                        ...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-                <tr className="border-b border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-danger-light dark:text-danger-dark">
-                        <MdOutlineShoppingBag className="text-red-400 text-xl" />
-                      </span>
-                      <p className="font-medium text-white">
-                        Purchase of clothing at Elegant Store
-                      </p>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-400 hidden md:table-cell">
-                    Shopping
-                  </td>
-                  <td className="p-4 text-gray-400 hidden lg:table-cell">
-                    July 10, 2024
-                  </td>
-                  <td className="p-4 text-right font-medium text-red-400">
-                    -$150.00
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-                      <span className="material-symbols-outlined text-base">
-                        ...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-                <tr className="hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-danger-light dark:text-danger-dark">
-                        <MdOutlineLocalMovies className="text-red-400 text-xl" />
-                      </span>
-                      <p className="font-medium text-white">
-                        Movies with friends
-                      </p>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-400 hidden md:table-cell">
-                    Entertainment
-                  </td>
-                  <td className="p-4 text-gray-400 hidden lg:table-cell">
-                    July 8, 2024
-                  </td>
-                  <td className="p-4 text-right font-medium text-red-400">
-                    -$40.00
-                  </td>
-                  <td className="p-4 text-center">
-                    <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-                      <span className="material-symbols-outlined text-base">
-                        ...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody> */}
+              <TransactionsTable transactions={displayTrans || transactions} />
             </table>
           </div>
         </div>
