@@ -14,13 +14,17 @@ export default function Transactions() {
 
   type FilterType = Transaction["type"] | "all";
   const type: string = searchParams.get("type") || "all";
+  const query: string = searchParams.get("query") || "";
 
   const displayTrans = useMemo(() => {
     return transactions.filter((t) => {
       const matchType = type === "all" || t.type === type;
-      return matchType;
+      const matchQuery = query === '' ||
+      t.description?.toLowerCase().includes(query.toLowerCase()) ||
+      t.category.toLowerCase().includes(query.toLowerCase());
+      return matchType && matchQuery;
     });
-  }, [transactions, type]);
+  }, [transactions, type, query]);
 
   //  Cambiar filtro al hacer clic
   function handleTypeChange(newType: FilterType) {
@@ -32,6 +36,18 @@ export default function Transactions() {
     }
     setSearchParams(params);
   }
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    const params = new URLSearchParams(searchParams);
+    if(e.target.value === ''){
+      params.delete("query");
+    } else {
+      params.set("query", e.target.value);
+    }
+    setSearchParams(params);
+    
+  }
+
+  
 
   console.log("here should be the transactions list");
   async function fetchTransactions() {
@@ -68,6 +84,8 @@ export default function Transactions() {
             <div className="relative flex-grow">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark"></span>
               <input
+              value={query}
+              onChange={handleSearchChange}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-subtle-light dark:bg-subtle-dark border border-gray-700 focus:ring-2  focus:outline-none text-white placeholder:text-gray-400"
                 placeholder="Search transactions by description, category..."
                 type="text"
