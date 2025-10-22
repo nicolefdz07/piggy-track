@@ -1,8 +1,8 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { MdWarningAmber } from "react-icons/md";
-import { useNavigate, useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useContext } from "react";
 import TransactionsContext from "../context/TransactionsContext";
 
 export default function TransactionDetails() {
@@ -17,20 +17,15 @@ export default function TransactionDetails() {
 
   const transaction = transactions.find((tx) => tx.id === id);
 
-  // useEffect(() => {
-  //   const load = async () => {
-  //     await fetchTransactionById(id);
-  //   };
-  //   load();
-  // }, [id, fetchTransactionById]);
+  
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <p className="text-sm text-slate-400">
-            <a className="hover:text-[#129EE4]" href="#">
+            <NavLink to="/transactions" className="hover:text-[#129EE4]" >
               Transactions
-            </a>
+            </NavLink>
             <span className="mx-2">/</span>
             <span>Transaction Details</span>
           </p>

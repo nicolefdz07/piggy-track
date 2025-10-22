@@ -1,17 +1,25 @@
 import { supabase } from "../lib/supabaseClient";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import DashboardTable from "../components/DashboardTable";
-import type { RecentTransaction } from "../types/Types";
+import type { RecentTransaction, Transaction } from "../types/Types";
+import TransactionsContext from "../context/TransactionsContext";
+import { formatCurrency } from "../utils/formatCurrency";
 
 
 
 export default function Dashboard() {
   const { session } = useAuth();
+  const context = useContext(TransactionsContext);
+  const transactions = context?.transactions || [];
   const [recentTransactions, setRecentTransactions] = useState<
     RecentTransaction[]
   >([]);
+
+  const income: number = transactions.filter((tx)=> tx.type === 'income').reduce((acc: number, tx) => acc + tx.amount, 0);
+  const expenses: number = transactions.filter((tx)=> tx.type === 'expense').reduce((acc: number, tx) => acc + tx.amount, 0);
+  const totalBalance: number = income - expenses;
 
   async function fetchRecentTransactions(): Promise<void> {
     try {
@@ -75,15 +83,15 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="p-6 ">
               <h3 className="text-gray-400 font-medium mb-2">Total Balance</h3>
-              <p className="text-3xl font-bold text-white">$5,768.90</p>
+              <p className="text-3xl font-bold text-white">{formatCurrency(totalBalance)}</p>
             </div>
             <div className="p-6 ">
               <h3 className="text-gray-400 font-medium mb-2">Income</h3>
-              <p className="text-3xl font-bold text-green-400">$5,768.90</p>
+              <p className="text-3xl font-bold text-green-400">{formatCurrency(income)}</p>
             </div>
             <div className="p-6 ">
               <h3 className="text-gray-400 font-medium mb-2">Expenses</h3>
-              <p className="text-3xl font-bold text-red-400">$3,456.78</p>
+              <p className="text-3xl font-bold text-red-400">{formatCurrency(expenses)}</p>
             </div>
           </div>
           <div className="flex justify-between items-center mb-6 flex-col gap-2 md:flex-row">
@@ -93,21 +101,23 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <select className=" border border-gray-600 text-gray-400 bg-transparent px-4 py-2 rounded-full pr-8  cursor-pointer hover:bg-gray-800 focus:outline-none">
                 <option selected>Type</option>
-                <option>Technology</option>
-                <option>Business</option>
-                <option>Health</option>
+                <option>Income</option>
+                <option>Expense</option>
               </select>
               <select className=" border border-gray-600 text-gray-400 bg-transparent px-4 py-2 rounded-full pr-8  cursor-pointer hover:bg-gray-800 focus:outline-none">
                 <option selected>Category</option>
-                <option>Technology</option>
-                <option>Business</option>
-                <option>Health</option>
+                <option>Food &amp; Dining</option>
+                <option>Transportation</option>
+                <option>Shopping</option>
+                <option>Utilities</option>
+                <option>Entertainment</option>
+                <option>Salary</option>
+                <option>Other</option>
               </select>
               <select className=" border border-gray-600 text-gray-400 bg-transparent px-4 py-2 rounded-full cursor-pointer hover:bg-gray-800 focus:outline-none">
                 <option selected>Date</option>
-                <option>Technology</option>
-                <option>Business</option>
-                <option>Health</option>
+                
+
               </select>
             </div>
           </div>

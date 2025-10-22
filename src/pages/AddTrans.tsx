@@ -165,6 +165,7 @@ export default function AddTrans() {
               <option>Utilities</option>
               <option>Entertainment</option>
               <option>Salary</option>
+              <option>Other</option>
             </select>
           </div>
           <div>
