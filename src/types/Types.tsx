@@ -27,3 +27,7 @@ export interface Budget {
    
 
 }
+
+export type FilterType = Transaction["type"] | "all";
+export type FilterCategory = Transaction["category"] | "all"
+export type FilterDate = Transaction["date"] | "all"

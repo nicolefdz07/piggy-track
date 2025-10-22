@@ -127,7 +127,7 @@ export default function Transactions() {
                   </th>
                 </tr>
               </thead>
-              <TransactionsTable transactions={displayTrans || transactions} />
+              <TransactionsTable transactions={displayTrans} />
             </table>
           </div>
         </div>
