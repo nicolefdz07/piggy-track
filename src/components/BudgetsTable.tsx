@@ -1,8 +1,9 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AiOutlineShopping } from "react-icons/ai";
 import { CiWarning } from "react-icons/ci";
 import { FaCar, FaShoppingCart } from "react-icons/fa";
 import { MdOutlineMovieCreation, MdOutlineRestaurant } from "react-icons/md";
+import { TiDeleteOutline } from "react-icons/ti";
 import { NavLink } from "react-router-dom";
 import entertainment from "../assets/entertainment.jpg";
 import grocery from "../assets/grocery.jpg";
@@ -10,10 +11,14 @@ import shopping from "../assets/shopping.jpg";
 import transportation from "../assets/transportation.webp";
 import utilities from "../assets/utilities.webp";
 import TransactionsContext from "../context/TransactionsContext";
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 import type { Budget } from "../types/Types";
 import ExpendCard from "./ExpendCard";
+import DeleteBudgetModal from "./DeleteBudgetModal";
 
 export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
+  const [openModal, setOpenModal] = useState(false);
   const context = useContext(TransactionsContext);
   const transactions = context?.transactions ?? [];
 
@@ -69,30 +74,39 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
           <span>New Budget</span>
         </NavLink>
       </div>
-      
+
       <div className="space-y-6">
         <div className="bg-[#1A2830] p-6 rounded-xl shadow-sm border border-gray-700 ">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1 space-y-4">
-              <NavLink to="/budget/edit">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#129EE4]/20 text-[#129EE4] text-[#129EE4]">
-                    <span>
-                      <FaShoppingCart className="text-2xl" />
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white">
-                      {budgets[0]?.name}
-                    </h3>
-                    <p className="text-sm text-gray-400">
-                      Remaining: $
-                      {Number(budgets[0]?.total_amount) -
-                        spentAmount(budgets[0]?.category)}
-                    </p>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#129EE4]/20 text-[#129EE4] text-[#129EE4]">
+                  <span>
+                    <FaShoppingCart className="text-2xl" />
+                  </span>
                 </div>
-              </NavLink>
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <NavLink to={`/budget/edit/${budgets[0]?.id}`}>
+                      <h3 className="text-lg font-bold text-white">
+                        {budgets[0]?.name}
+                      </h3>
+                    </NavLink>
+                    <button onClick={() => setOpenModal(true)}>
+                      <RiDeleteBin6Line className="text-3xl font-bold text-[#129EE4] hover:text-[#0f7ae5]" />
+                    </button>
+                    <DeleteBudgetModal 
+                    deleteFunc={()=> {}}
+                    open={openModal} budgetName="Shopping" onClose={() => setOpenModal(false)} />
+                  </div>
+
+                  <p className="text-sm text-gray-400">
+                    Remaining: $
+                    {Number(budgets[0]?.total_amount) -
+                      spentAmount(budgets[0]?.category)}
+                  </p>
+                </div>
+              </div>
 
               <div className="flex flex-col md:flex-row items-center md:items-start gap-4 ">
                 {/* Sección izquierda: info y barra */}
@@ -160,18 +174,18 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
 
       <section className="grid md:grid-cols-2 gap-6 mt-8">
         {budgets.slice(1).map((budget) => (
-          <NavLink to={`/budget/edit/${budget.id}`} key={budget.id}>
-            <ExpendCard
-              type={budget.name}
-              remaining={
-                Number(budget.total_amount) -
-                Number(spentAmount(budget.category))
-              }
-              icon={getIcon(budget.category)}
-              total_amount={Number(budget.total_amount)}
-              total_spent={spentAmount(budget.category)}
-            />
-          </NavLink>
+          <ExpendCard
+            id={budget.id}
+            key={budget.id}
+            type={budget.name}
+            onDelete={()=> setOpenModal(true)}
+            remaining={
+              Number(budget.total_amount) - Number(spentAmount(budget.category))
+            }
+            icon={getIcon(budget.category)}
+            total_amount={Number(budget.total_amount)}
+            total_spent={spentAmount(budget.category)}
+          />
         ))}
       </section>
     </main>
