@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { RecentTransaction } from "../types/Types";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -6,11 +7,17 @@ export default function DashboardTable({
 }: {
   transactions: RecentTransaction[];
 }) {
+  const navigate = useNavigate();
+
   return (
     <tbody className="divide-y divide-gray-700">
       {transactions.map((transaction: RecentTransaction) => {
         return (
-          <tr key={transaction.id}>
+          <tr
+            key={transaction.id}
+            onClick={() => navigate(`/transactions/details/${transaction.id}`)}
+            className="cursor-pointer hover:bg-gray-800"
+          >
             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
               {transaction.date}
             </td>
@@ -27,7 +34,9 @@ export default function DashboardTable({
                   : "text-red-400"
               }`}
             >
-              {` ${transaction.type === "income" ? "+" : "-"}${formatCurrency(transaction.amount)}`}
+              {` ${transaction.type === "income" ? "+" : "-"}${formatCurrency(
+                transaction.amount
+              )}`}
             </td>
           </tr>
         );

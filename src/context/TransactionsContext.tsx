@@ -19,6 +19,7 @@ interface TransactionsContextType {
   loading: boolean
   error: string | null
   fetchTransactionById: (id: string) => Promise<Transaction | undefined>
+  deleteTransaction: (id: string) => Promise<Boolean>
   
   
 }
@@ -75,6 +76,22 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
    }
 
     }
+    async function deleteTransaction(id: string): Promise<boolean> {
+    try {
+      const {error} = await supabase
+      .from('transactions')
+      .delete()
+      .eq('id', id);
+
+      if (error) throw error;
+
+      return true;
+    }catch(err){
+      console.error("Error deleting transaction:", err);
+      return false;
+    }
+    
+    }
 
   
 
@@ -82,7 +99,8 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
       transactions,
       loading,
       error,
-      fetchTransactionById
+      fetchTransactionById,
+      deleteTransaction
     }
 
     return (

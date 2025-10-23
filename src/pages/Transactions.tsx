@@ -1,11 +1,11 @@
 
-import { NavLink } from "react-router-dom";
+
 import type { Transaction } from "../types/Types";
 import {  useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import TransactionsTable from "../components/TransactionsTable";
-import { useSearchParams } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 
 export default function Transactions() {
   const { session } = useAuth();
@@ -146,6 +146,14 @@ export default function Transactions() {
                 </tr>
               </thead>
               <TransactionsTable transactions={displayTrans} />
+              <div className="flex justify-start mt-30  ">
+            <NavLink
+              to="/transactions/add"
+              className="w-1/2 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
+            >
+              New Transaction
+            </NavLink>
+          </div>
             </table>
           </div>
         </div>

@@ -2,19 +2,23 @@ import { MdOutlineRestaurant } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import type { Transaction } from "../types/Types";
 import { formatCurrency } from "../utils/formatCurrency";
+import { useNavigate } from "react-router-dom";
 
 export default function TransactionsTable({
   transactions,
 }: {
   transactions: Transaction[];
 })
+
  {
+  const navigate = useNavigate()
   return (
     <tbody>
       {transactions.map((transaction, idx) => (
         <tr
           key={transaction.id ?? idx}
-          className="border-b border-gray-700 hover:bg-subtle-light/50 dark:hover:bg-subtle-dark/50"
+          className="border-b border-gray-700 cursor-pointer hover:bg-gray-800"
+          onClick={()=> navigate(`/transactions/details/${transaction.id}`)}
         >
           <td className="p-4">
             <div className="flex items-center gap-3">

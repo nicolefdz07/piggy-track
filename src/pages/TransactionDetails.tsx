@@ -1,21 +1,33 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEdit } from "react-icons/md";
-import { MdWarningAmber } from "react-icons/md";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import TransactionsContext from "../context/TransactionsContext";
+import DeleteTransModal from "../components/DeleteTransModal";
 
 export default function TransactionDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
   const context = useContext(TransactionsContext);
   if (!context) {
     return null;
   }
-  
-  const { transactions } = context;
+
+  const { deleteTransaction, transactions } = context;
 
   const transaction = transactions.find((tx) => tx.id === id);
+
+   const handleDeleteTrans = async () => {
+     if (!id) return;
+     try {
+       await deleteTransaction(id);
+       setOpenModal(false);
+       navigate('/transactions');
+     } catch (err) {
+       console.error("Error deleting transaction:", err);
+     }
+   }
 
   
   return (
@@ -85,7 +97,9 @@ export default function TransactionDetails() {
               </span>
               Edit
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-2xl bg-red-500 hover:bg-red-600 text-white transition-colors">
+            <button 
+            onClick={()=> setOpenModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-2xl bg-red-500 hover:bg-red-600 text-white transition-colors">
               <span className="">
                 <RiDeleteBin6Line className="text-white"/>
               </span>
@@ -93,7 +107,13 @@ export default function TransactionDetails() {
             </button>
           </div>
         </div>
-        <div className="mt-10 bg-[#101C22] rounded-lg shadow-sm border border-slate-800 p-6 text-center">
+        <DeleteTransModal
+        id={id!}
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        deleteFunc={handleDeleteTrans}
+        />
+        {/* <div className="mt-10 bg-[#101C22] rounded-lg shadow-sm border border-slate-800 p-6 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
             <span className="">
               <MdWarningAmber className="text-red-400 text-2xl"/>
@@ -114,7 +134,7 @@ export default function TransactionDetails() {
               Yes, Delete
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </main>
   );
