@@ -12,29 +12,32 @@ import TransactionDetails from "./pages/TransactionDetails.tsx";
 import AddTrans from "./pages/AddTrans.tsx";
 import CreateBudget from "./pages/CreateBudget.tsx";
 import EditBudget from "./pages/EditBudget.tsx";
+import { BudgetsProvider } from "./context/BudgetsContext.tsx";
 
 function App() {
   return (
     <TransactionsProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="budget" element={<Budget />} />
-            <Route path="budget/create" element={<CreateBudget />} />
-            <Route path="budget/edit/:id" element={<EditBudget />} />
-            <Route path="transactions" element={<Transactions />} />
-            <Route
-              path="transactions/details/:id"
-              element={<TransactionDetails />}
-            />
-            <Route path="transactions/add" element={<AddTrans />} />
-          </Route>
+      <BudgetsProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="budget" element={<Budget />} />
+              <Route path="budget/create" element={<CreateBudget />} />
+              <Route path="budget/edit/:id" element={<EditBudget />} />
+              <Route path="transactions" element={<Transactions />} />
+              <Route
+                path="transactions/details/:id"
+                element={<TransactionDetails />}
+              />
+              <Route path="transactions/add" element={<AddTrans />} />
+            </Route>
 
-          <Route path="/" element={<Login />} />
-          <Route path="signup" element={<Register />} />
-        </Routes>
-      </BrowserRouter>
+            <Route path="/" element={<Login />} />
+            <Route path="signup" element={<Register />} />
+          </Routes>
+        </BrowserRouter>
+      </BudgetsProvider>
     </TransactionsProvider>
   );
 }

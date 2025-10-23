@@ -1,12 +1,4 @@
-import { FaShoppingCart } from "react-icons/fa";
-import { CiWarning } from "react-icons/ci";
-import grocery from "../assets/grocery.jpg";
-import ExpendCard from "../components/ExpendCard";
-import { MdOutlineRestaurant } from "react-icons/md";
-import { MdOutlineMovieCreation } from "react-icons/md";
-import { AiOutlineShopping } from "react-icons/ai";
-import { FaCar } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+
 import { useEffect, useState } from "react";
 import type { Budget } from "../types/Types";
 import { useAuth } from "../context/AuthContext";

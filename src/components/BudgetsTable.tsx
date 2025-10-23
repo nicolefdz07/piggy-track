@@ -3,8 +3,7 @@ import { AiOutlineShopping } from "react-icons/ai";
 import { CiWarning } from "react-icons/ci";
 import { FaCar, FaShoppingCart } from "react-icons/fa";
 import { MdOutlineMovieCreation, MdOutlineRestaurant } from "react-icons/md";
-import { TiDeleteOutline } from "react-icons/ti";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import entertainment from "../assets/entertainment.jpg";
 import grocery from "../assets/grocery.jpg";
 import shopping from "../assets/shopping.jpg";
@@ -12,15 +11,17 @@ import transportation from "../assets/transportation.webp";
 import utilities from "../assets/utilities.webp";
 import TransactionsContext from "../context/TransactionsContext";
 import { RiDeleteBin6Line } from "react-icons/ri";
-
 import type { Budget } from "../types/Types";
 import ExpendCard from "./ExpendCard";
 import DeleteBudgetModal from "./DeleteBudgetModal";
+import useDeleteBudget from "../hooks/useDeleteBudget";
 
 export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
   const [openModal, setOpenModal] = useState(false);
+  const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
   const context = useContext(TransactionsContext);
   const transactions = context?.transactions ?? [];
+  const { handleDeleteBudget} = useDeleteBudget({onCloseModal: ()=> setOpenModal(false)});
 
   const spentAmount = (category?: string): number => {
     const cat = (category ?? "").toLowerCase().trim();
@@ -60,6 +61,28 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
     const percentage = Number((spent / total) * 100);
     return `${percentage}%`;
   };
+
+  // const handleDeleteBudget = async (id: string): Promise<void> => {
+  //   if (!deleteBudget) {
+  //     console.error("deleteBudget function is not available");
+  //     setOpenModal(false);
+  //     return;
+  //   }
+
+  //   if (!id) {
+  //     console.error("No budget id to delete");
+  //     setOpenModal(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     await deleteBudget(id);
+  //     setOpenModal(false);
+  //     navigate("/budget");
+  //   } catch (err) {
+  //     console.error("Error deleting budget:", err);
+  //   }
+  // };
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
@@ -74,103 +97,116 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
           <span>New Budget</span>
         </NavLink>
       </div>
-
-      <div className="space-y-6">
-        <div className="bg-[#1A2830] p-6 rounded-xl shadow-sm border border-gray-700 ">
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="flex-1 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#129EE4]/20 text-[#129EE4] text-[#129EE4]">
-                  <span>
-                    <FaShoppingCart className="text-2xl" />
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <NavLink to={`/budget/edit/${budgets[0]?.id}`}>
-                      <h3 className="text-lg font-bold text-white">
-                        {budgets[0]?.name}
-                      </h3>
-                    </NavLink>
-                    <button onClick={() => setOpenModal(true)}>
-                      <RiDeleteBin6Line className="text-3xl font-bold text-[#129EE4] hover:text-[#0f7ae5]" />
-                    </button>
-                    <DeleteBudgetModal 
-                    deleteFunc={()=> {}}
-                    open={openModal} budgetName="Shopping" onClose={() => setOpenModal(false)} />
-                  </div>
-
-                  <p className="text-sm text-gray-400">
-                    Remaining: $
-                    {Number(budgets[0]?.total_amount) -
-                      spentAmount(budgets[0]?.category)}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-4 ">
-                {/* Sección izquierda: info y barra */}
-                <div className="flex-[2] w-full justify-center">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span className="text-white">{`$${spentAmount(
-                      budgets[0]?.category
-                    )} / $${budgets[0]?.total_amount}`}</span>
-                    <span className="text-gray-400">
-                      {calcWidthPercentage(
-                        spentAmount(budgets[0]?.category),
-                        Number(budgets[0]?.total_amount)
-                      )}
+      {budgets[0] && (
+        <div className="space-y-6">
+          <div className="bg-[#1A2830] p-6 rounded-xl shadow-sm border border-gray-700 ">
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-[#129EE4]/20 text-[#129EE4] text-[#129EE4]">
+                    <span>
+                      <FaShoppingCart className="text-2xl" />
                     </span>
                   </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <NavLink to={`/budget/edit/${budgets[0]?.id}`}>
+                        <h3 className="text-lg font-bold text-white">
+                          {budgets[0]?.name}
+                        </h3>
+                      </NavLink>
+                      <button
+                        onClick={() => {
+                          setSelectedBudget(budgets[0] || null);
+                          setOpenModal(true);
+                        }}
+                      >
+                        <RiDeleteBin6Line className="text-3xl font-bold text-[#129EE4] hover:text-[#0f7ae5]" />
+                      </button>
+                      <DeleteBudgetModal
+                        deleteFunc={() => {
+                          if (selectedBudget?.id) {
+                            handleDeleteBudget(selectedBudget.id);
+                          }
+                        }}
+                        open={openModal}
+                        budgetName={selectedBudget?.name || ""}
+                        onClose={() => setOpenModal(false)}
+                      />
+                    </div>
 
-                  <div className="bg-[#243641] rounded-full h-3 overflow-hidden mt-1">
-                    <div
-                      id="progress"
-                      className="bg-[#129EE4] h-3 rounded-full transition-all duration-300 ease-in-out"
-                      style={{
-                        width: calcWidthPercentage(
-                          spentAmount(budgets[0]?.category),
-                          Number(budgets[0]?.total_amount)
-                        ),
-                      }}
-                    ></div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-2">
-                    {(() => {
-                      const total = Number(budgets[0]?.total_amount) || 0;
-                      const spent =
-                        Number(spentAmount(budgets[0]?.category)) || 0;
-                      const percent = total > 0 ? (spent / total) * 100 : 0;
-                      return (
-                        <>
-                          {percent >= 80 && (
-                            <CiWarning className="text-yellow-300 text-3xl" />
-                          )}
-                          <p className="text-yellow-400 text-sm">
-                            {percent >= 80
-                              ? "You are too close to your limit!"
-                              : ""}
-                          </p>
-                        </>
-                      );
-                    })()}
+                    <p className="text-sm text-gray-400">
+                      Remaining: $
+                      {Number(budgets[0]?.total_amount) -
+                        spentAmount(budgets[0]?.category)}
+                    </p>
                   </div>
                 </div>
 
-                {/* Sección derecha: imagen */}
-                <div className="flex-[1] w-full md:w-auto">
-                  <img
-                    src={getImg(budgets[0]?.category)}
-                    alt={budgets[0]?.name}
-                    className="rounded-lg w-full h-auto object-cover"
-                  />
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-4 ">
+                  {/* Sección izquierda: info y barra */}
+                  <div className="flex-[2] w-full justify-center">
+                    <div className="flex justify-between text-sm font-medium">
+                      <span className="text-white">{`$${spentAmount(
+                        budgets[0]?.category
+                      )} / $${budgets[0]?.total_amount}`}</span>
+                      <span className="text-gray-400">
+                        {calcWidthPercentage(
+                          spentAmount(budgets[0]?.category),
+                          Number(budgets[0]?.total_amount)
+                        )}
+                      </span>
+                    </div>
+
+                    <div className="bg-[#243641] rounded-full h-3 overflow-hidden mt-1">
+                      <div
+                        id="progress"
+                        className="bg-[#129EE4] h-3 rounded-full transition-all duration-300 ease-in-out"
+                        style={{
+                          width: calcWidthPercentage(
+                            spentAmount(budgets[0]?.category),
+                            Number(budgets[0]?.total_amount)
+                          ),
+                        }}
+                      ></div>
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-2">
+                      {(() => {
+                        const total = Number(budgets[0]?.total_amount) || 0;
+                        const spent =
+                          Number(spentAmount(budgets[0]?.category)) || 0;
+                        const percent = total > 0 ? (spent / total) * 100 : 0;
+                        return (
+                          <>
+                            {percent >= 80 && (
+                              <CiWarning className="text-yellow-300 text-3xl" />
+                            )}
+                            <p className="text-yellow-400 text-sm">
+                              {percent >= 80
+                                ? "You are too close to your limit!"
+                                : ""}
+                            </p>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Sección derecha: imagen */}
+                  <div className="flex-[1] w-full md:w-auto">
+                    <img
+                      src={getImg(budgets[0]?.category)}
+                      alt={budgets[0]?.name}
+                      className="rounded-lg w-full h-auto object-cover"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <section className="grid md:grid-cols-2 gap-6 mt-8">
         {budgets.slice(1).map((budget) => (
@@ -178,7 +214,10 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
             id={budget.id}
             key={budget.id}
             type={budget.name}
-            onDelete={()=> setOpenModal(true)}
+            onDelete={() => {
+              setSelectedBudget(budget);
+              setOpenModal(true);
+            }}
             remaining={
               Number(budget.total_amount) - Number(spentAmount(budget.category))
             }

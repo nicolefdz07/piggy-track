@@ -4,57 +4,74 @@ import { useAuth } from "./AuthContext";
 import { supabase } from "../lib/supabaseClient";
 
 interface BudgetsContextType {
-  Budgets: Budget[]
-  loading: boolean
-  error: string | null
-  
-  
-  
+  Budgets: Budget[];
+  loading: boolean;
+  error: string | null;
+  deleteBudget: (id: string) => Promise<boolean>;
 }
 const BudgetsContext = createContext<BudgetsContextType | undefined>(undefined);
 
-export const BudgetsProvider = ({children} : {children: React.ReactNode})=>{
-  const {session} = useAuth();
-  const [Budgets, setBudgets] = useState<Budget[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export const BudgetsProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const { session } = useAuth();
+  const [Budgets, setBudgets] = useState<Budget[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function fetchBudgets() {
     if (!session) return;
-    try{
-        const { data, error } = await supabase
-          .from("budgets")
-          .select("*")
-          .eq("user_id", session?.user.id)
-          .order("created_at", { ascending: false });
-    
-          if(error) throw error;
-          setBudgets(data ?? [])
-          console.log(data)
-        }catch(err: unknown){
+    try {
+      const { data, error } = await supabase
+        .from("budgets")
+        .select("*")
+        .eq("user_id", session?.user.id)
+        .order("created_at", { ascending: false });
 
-          setError(err instanceof Error ? err.message : String(err));
-        }finally{
-          setLoading(false);
-        }
+      if (error) throw error;
+      setBudgets(data ?? []);
+      console.log(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoading(false);
+    }
   }
 
-  useEffect(()=>{
-    if(session){
+  useEffect(() => {
+    if (session) {
       fetchBudgets();
     }
-  }, [session])
+  }, [session]);
+
+  const deleteBudget = async (id: string): Promise<boolean> => {
+    if (!session) return false;
+
+    try {
+      const { error } = await supabase.from("budgets").delete().eq("id", id);
+
+      if (error) throw error;
+
+      return true;
+    } catch (err) {
+      console.error("Error deleting transaction:", err);
+      return false;
+    }
+  };
 
   const BudgetCtx = {
     Budgets,
     loading,
     error,
-  }
+    deleteBudget
+  };
 
   return (
     <BudgetsContext.Provider value={BudgetCtx}>
       {children}
     </BudgetsContext.Provider>
-  )
-}
+  );
+};
 export default BudgetsContext;
