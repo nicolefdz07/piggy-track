@@ -1,7 +1,5 @@
-
-
 import type { Transaction } from "../types/Types";
-import {  useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import TransactionsTable from "../components/TransactionsTable";
@@ -19,9 +17,10 @@ export default function Transactions() {
   const displayTrans = useMemo(() => {
     return transactions.filter((t) => {
       const matchType = type === "all" || t.type === type;
-      const matchQuery = query === '' ||
-      t.description?.toLowerCase().includes(query.toLowerCase()) ||
-      t.category.toLowerCase().includes(query.toLowerCase());
+      const matchQuery =
+        query === "" ||
+        t.description?.toLowerCase().includes(query.toLowerCase()) ||
+        t.category.toLowerCase().includes(query.toLowerCase());
       return matchType && matchQuery;
     });
   }, [transactions, type, query]);
@@ -36,20 +35,16 @@ export default function Transactions() {
     }
     setSearchParams(params);
   }
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
-    if(e.target.value === ''){
+    if (e.target.value === "") {
       params.delete("query");
     } else {
       params.set("query", e.target.value);
     }
     setSearchParams(params);
-    
-  }
+  };
 
-  
-
-  console.log("here should be the transactions list");
   async function fetchTransactions() {
     const { data, error } = await supabase
       .from("transactions")
@@ -84,8 +79,8 @@ export default function Transactions() {
             <div className="relative flex-grow">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark"></span>
               <input
-              value={query}
-              onChange={handleSearchChange}
+                value={query}
+                onChange={handleSearchChange}
                 className="w-full pl-10 pr-4 py-2 rounded-xl bg-subtle-light dark:bg-subtle-dark border border-gray-700 focus:ring-2  focus:outline-none text-white placeholder:text-gray-400"
                 placeholder="Search transactions by description, category..."
                 type="text"
@@ -128,33 +123,33 @@ export default function Transactions() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-700 ">
-                  <th className="p-4 text-sm font-semibold text-gray-300">
+                  <th className="p-4 text-lg font-semibold text-gray-300">
                     Description
                   </th>
-                  <th className="p-4 text-sm font-semibold text-gray-300 hidden md:table-cell">
+                  <th className="p-4 text-lg font-semibold text-gray-300 hidden md:table-cell">
                     Category
                   </th>
-                  <th className="p-4 text-sm font-semibold text-gray-300 hidden lg:table-cell">
+                  <th className="p-4 text-lg font-semibold text-gray-300 hidden lg:table-cell">
                     Date
                   </th>
-                  <th className="p-4 text-sm font-semibold text-gray-300 text-right">
+                  <th className="p-4 text-lg font-semibold text-gray-300 text-right">
                     Amount
                   </th>
-                  <th className="p-4 text-sm font-semibold text-gray-300 text-center">
+                  <th className="p-4 text-lg font-semibold text-gray-300 text-center">
                     Actions
                   </th>
                 </tr>
               </thead>
               <TransactionsTable transactions={displayTrans} />
-              <div className="flex justify-start mt-30  ">
-            <NavLink
-              to="/transactions/add"
-              className="w-1/2 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
-            >
-              New Transaction
-            </NavLink>
-          </div>
             </table>
+            <div className="flex justify-start mt-30  ">
+              <NavLink
+                to="/transactions/add"
+                className="w-1/2 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
+              >
+                New Transaction
+              </NavLink>
+            </div>
           </div>
         </div>
       </div>

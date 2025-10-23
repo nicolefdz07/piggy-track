@@ -10,7 +10,11 @@ interface AuthContextType {
     email: string,
     password: string
   ) => Promise<{ success: boolean; data?: any; error?: string }>;
-  signOutUser: () => Promise<{ success: boolean; error: string }>;
+  signOutUser: () => Promise<{ success: boolean; error?: string }>;
+  signUpNewUser: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -107,9 +111,39 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // sign up 
+  const signUpNewUser = async (email: string, password: string) => {
+    try {
+      // supabase method
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password: password,
+      });
+      // handle supabase error explicitly
+      if (error) {
+        console.error("Supabase sign-up error:", error.message);
+        return { success: false, error: error.message };
+      }
+      // success
+      console.log("supabase sign-up success:", data);
+      return { success: true, data: data };
+    } catch (error: unknown) {
+      // unexpected error
+      if (error instanceof Error) {
+        console.error("Unexpected error during sign-up:", error.message);
+      } else {
+        console.error("Unexpected error during sign-up:", error);
+      }
+      return {
+        success: false,
+        error: "Unexpected error ocurred, please try again.",
+      };
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ session, setSession, signInUser, signOutUser }}
+      value={{ session, setSession, signInUser, signOutUser, signUpNewUser }}
     >
       {children}
     </AuthContext.Provider>

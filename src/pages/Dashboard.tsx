@@ -43,6 +43,7 @@ export default function Dashboard() {
     id
     `
         )
+        .eq("user_id", session?.user.id)
         .order("created_at", {
           ascending: false,
         })
@@ -175,16 +176,16 @@ export default function Dashboard() {
             <table className="w-full">
               <thead className="bg-gray-800/50 rounded-t-full">
                 <tr>
-                  <th className="px-6 py-4 text-xs text-left font-bold  text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-lg text-left font-bold  text-gray-400 uppercase tracking-wider">
                     date
                   </th>
-                  <th className="px-6 py-4 text-xs text-left font-bold  text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-lg text-left font-bold  text-gray-400 uppercase tracking-wider">
                     description
                   </th>
-                  <th className="px-6 py-4 text-xs text-left font-bold  text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-lg text-left font-bold  text-gray-400 uppercase tracking-wider">
                     category
                   </th>
-                  <th className="px-6 py-4 text-xs text-left font-bold  text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-lg text-left font-bold  text-gray-400 uppercase tracking-wider">
                     amount
                   </th>
                 </tr>

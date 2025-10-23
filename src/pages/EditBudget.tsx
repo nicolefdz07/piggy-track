@@ -1,9 +1,29 @@
 import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabaseClient";
+import { useEffect } from "react";
 
 ;
 
-export default function EditBudget() {
+export default async function EditBudget() {
   const {id} = useParams<{id: string}>();
+  const {session} = useAuth();
+
+// useEffect(async () => {
+//   if (!session) return;
+
+//   const { error } = await supabase
+//     .from('budgets')
+//     .update({ name: 'piano' })
+//     .eq('id', 1)
+// }, [])
+
+
+
+
+
+
+
   return (
     <main className="flex-grow container mx-auto px-6 py-12 flex justify-center">
       <div className="w-full max-w-lg">
@@ -22,6 +42,7 @@ export default function EditBudget() {
               Budget Name
             </label>
             <input
+            
               className="w-full h-14 px-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-2xl focus:ring-2 focus:ring-[#129EE4] focus:border-[#129EE4] outline-none transition-shadow text-slate-400"
               id="budget-name"
               type="text"

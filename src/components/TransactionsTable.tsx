@@ -1,17 +1,27 @@
-import { MdOutlineRestaurant } from "react-icons/md";
+import { MdOutlineMovieCreation, MdOutlineRestaurant } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import type { Transaction } from "../types/Types";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useNavigate } from "react-router-dom";
+import { FaCar, FaShoppingCart } from "react-icons/fa";
+import { AiOutlineShopping } from "react-icons/ai";
 
 export default function TransactionsTable({
   transactions,
 }: {
   transactions: Transaction[];
 })
-
  {
   const navigate = useNavigate()
+  const getIcon = (category?: string) => {
+      const cat = (category ?? "").toLowerCase().trim();
+      if (cat.includes("food") || cat.includes("grocery"))
+        return <MdOutlineRestaurant className="text-[#13A4EC] text-xl"/>;
+      if (cat.includes("entertain")) return <MdOutlineMovieCreation className="text-[#13A4EC] text-xl"/>;
+      if (cat.includes("shop")) return <AiOutlineShopping className="text-[#13A4EC] text-xl"/>;
+      if (cat.includes("transport")) return <FaCar className="text-[#13A4EC] text-xl"/>;
+      return <FaShoppingCart className="text-[#13A4EC] text-xl"/>;
+    };
   return (
     <tbody>
       {transactions.map((transaction, idx) => (
@@ -26,7 +36,7 @@ export default function TransactionsTable({
                 to={`/transactions/details/${transaction.id}`}
                 className="flex items-center gap-3"
               >
-                <MdOutlineRestaurant className="text-red-400 text-xl" />
+                {getIcon(transaction.category)}
                 <p className="font-medium text-white">
                   {transaction.description}
                 </p>

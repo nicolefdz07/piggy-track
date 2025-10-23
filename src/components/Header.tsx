@@ -16,7 +16,7 @@ export default function Header() {
 
     const { success, error } = await signOutUser();
     if (success) {
-      Navigate("/");
+      Navigate("signin");
     } else {
       setError(error);
     }
@@ -58,7 +58,7 @@ export default function Header() {
         </nav>
       </section>
       <section className="flex items-center">
-        <NavLink to="/" className="text-md font-medium hover:text-[#129EE4]">
+        <NavLink to="/signup" className="text-md font-medium hover:text-[#129EE4]">
           <RxAvatar className="text-3xl" />
         </NavLink>
         <button onClick={handleSignOut} aria-label="Sign Out of your account">

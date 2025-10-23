@@ -1,20 +1,16 @@
 import { useContext, useState } from "react";
-import { AiOutlineShopping } from "react-icons/ai";
 import { CiWarning } from "react-icons/ci";
-import { FaCar, FaShoppingCart } from "react-icons/fa";
-import { MdOutlineMovieCreation, MdOutlineRestaurant } from "react-icons/md";
-import { NavLink, useNavigate } from "react-router-dom";
-import entertainment from "../assets/entertainment.jpg";
-import grocery from "../assets/grocery.jpg";
-import shopping from "../assets/shopping.jpg";
-import transportation from "../assets/transportation.webp";
-import utilities from "../assets/utilities.webp";
+import { FaShoppingCart } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
 import TransactionsContext from "../context/TransactionsContext";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiErrorWarningLine } from "react-icons/ri";
 import type { Budget } from "../types/Types";
 import ExpendCard from "./ExpendCard";
 import DeleteBudgetModal from "./DeleteBudgetModal";
 import useDeleteBudget from "../hooks/useDeleteBudget";
+import { getIcon } from "../utils/helperFunctions";
+import { getImg } from "../utils/helperFunctions";
+import { calcWidthPercentage } from "../utils/helperFunctions";
 
 export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
   const [openModal, setOpenModal] = useState(false);
@@ -38,51 +34,7 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
       );
   };
 
-  const getImg = (category?: string) => {
-    const cat = (category ?? "").toLowerCase().trim();
-    if (cat.includes("food") || cat.includes("grocery")) return grocery;
-    if (cat.includes("entertain")) return entertainment;
-    if (cat.includes("shop")) return shopping;
-    if (cat.includes("transport")) return transportation;
-    if (cat.includes("utili")) return utilities;
-    else return grocery;
-  };
-  const getIcon = (category?: string) => {
-    const cat = (category ?? "").toLowerCase().trim();
-    if (cat.includes("food") || cat.includes("grocery"))
-      return <MdOutlineRestaurant />;
-    if (cat.includes("entertain")) return <MdOutlineMovieCreation />;
-    if (cat.includes("shop")) return <AiOutlineShopping />;
-    if (cat.includes("transport")) return <FaCar />;
-    return <FaShoppingCart />;
-  };
-  const calcWidthPercentage = (spent: number, total: number): string => {
-    if (total === 0) return "0%";
-    const percentage = Number((spent / total) * 100);
-    return `${percentage}%`;
-  };
 
-  // const handleDeleteBudget = async (id: string): Promise<void> => {
-  //   if (!deleteBudget) {
-  //     console.error("deleteBudget function is not available");
-  //     setOpenModal(false);
-  //     return;
-  //   }
-
-  //   if (!id) {
-  //     console.error("No budget id to delete");
-  //     setOpenModal(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     await deleteBudget(id);
-  //     setOpenModal(false);
-  //     navigate("/budget");
-  //   } catch (err) {
-  //     console.error("Error deleting budget:", err);
-  //   }
-  // };
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
@@ -177,16 +129,21 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
                         const spent =
                           Number(spentAmount(budgets[0]?.category)) || 0;
                         const percent = total > 0 ? (spent / total) * 100 : 0;
+
                         return (
                           <>
-                            {percent >= 80 && (
+                          {percent >= 100 && (
+                            <RiErrorWarningLine className="text-red-500 text-3xl" />
+
+                          )}
+                            {percent >= 80 && percent < 100 && (
                               <CiWarning className="text-yellow-300 text-3xl" />
                             )}
-                            <p className="text-yellow-400 text-sm">
-                              {percent >= 80
-                                ? "You are too close to your limit!"
-                                : ""}
+                            <p className="text-yellow-500 text-sm">
+                              {percent >= 80 && percent < 100 ? "You are too close to your limit!" : ""}
+                              
                             </p>
+                            <p className="text-red-500 text-sm"> {percent >= 100 ? "You have exceeded your limit!" : ""}</p>
                           </>
                         );
                       })()}

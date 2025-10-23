@@ -13,32 +13,44 @@ import AddTrans from "./pages/AddTrans.tsx";
 import CreateBudget from "./pages/CreateBudget.tsx";
 import EditBudget from "./pages/EditBudget.tsx";
 import { BudgetsProvider } from "./context/BudgetsContext.tsx";
+import RootRedirect from "./routes/RootRedirect.tsx";
+import { AuthContextProvider } from "./context/AuthContext.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 function App() {
   return (
-    <TransactionsProvider>
-      <BudgetsProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="budget" element={<Budget />} />
-              <Route path="budget/create" element={<CreateBudget />} />
-              <Route path="budget/edit/:id" element={<EditBudget />} />
-              <Route path="transactions" element={<Transactions />} />
+    <AuthContextProvider>
+      <TransactionsProvider>
+        <BudgetsProvider>
+          <BrowserRouter>
+            <Routes>
               <Route
-                path="transactions/details/:id"
-                element={<TransactionDetails />}
-              />
-              <Route path="transactions/add" element={<AddTrans />} />
-            </Route>
+                element={
+                  <ProtectedRoute>
+                    <Layout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="budget" element={<Budget />} />
+                <Route path="budget/create" element={<CreateBudget />} />
+                <Route path="budget/edit/:id" element={<EditBudget />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route
+                  path="transactions/details/:id"
+                  element={<TransactionDetails />}
+                />
+                <Route path="transactions/add" element={<AddTrans />} />
+              </Route>
 
-            <Route path="/" element={<Login />} />
-            <Route path="signup" element={<Register />} />
-          </Routes>
-        </BrowserRouter>
-      </BudgetsProvider>
-    </TransactionsProvider>
+              <Route path="/" element={<RootRedirect />} />
+              <Route path="signin" element={<Login />} />
+              <Route path="signup" element={<Register />} />
+            </Routes>
+          </BrowserRouter>
+        </BudgetsProvider>
+      </TransactionsProvider>
+    </AuthContextProvider>
   );
 }
 

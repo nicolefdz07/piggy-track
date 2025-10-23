@@ -20,7 +20,6 @@ export default function AddTrans() {
       try {
         const newTransaction: Omit<Transaction, "id"> = {
           user_id: userId,
-          // usa el estado local `type` que está sincronizado con los radios
           type: type,
           amount: parseFloat(String(formData.get("amount") ?? "0")) || 0,
           category: String(formData.get("category") ?? ""),
