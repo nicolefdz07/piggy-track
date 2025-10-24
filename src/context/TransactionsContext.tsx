@@ -2,17 +2,8 @@ import { createContext, useEffect, useState } from "react";
 import type { ReactNode} from "react"; 
 import { useAuth } from "./AuthContext";
 import { supabase } from '../lib/supabaseClient';
+import type { Transaction } from "../types/Types";
 
-export interface Transaction {
-  id: string;
-  user_id: string;
-  amount: number;
-  category: string;
-  created_at: string;
-  date: string;
-  description: string;
-  type: "expense" | "income" | string;
-}
 
 interface TransactionsContextType {
   transactions: Transaction[]
@@ -20,6 +11,8 @@ interface TransactionsContextType {
   error: string | null
   fetchTransactionById: (id: string) => Promise<Transaction | undefined>
   deleteTransaction: (id: string) => Promise<Boolean>
+  createTransaction: (newTransaction: Omit<Transaction, "id">) => Promise<Transaction | null>
+  updateTransaction: (id: string, updates: Partial<Transaction>) => Promise<boolean>
   
   
 }
@@ -29,6 +22,7 @@ const TransactionsContext = createContext<TransactionsContextType | undefined>(u
 export const TransactionsProvider = ({children} : {children: ReactNode})=>{
   const {session} = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const userId = session?.user.id || "";
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -81,6 +75,7 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
       const {error} = await supabase
       .from('transactions')
       .delete()
+      .eq('user_id', userId)
       .eq('id', id);
 
       if (error) throw error;
@@ -93,6 +88,50 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
     
     }
 
+    const createTransaction = async (newTransaction: Omit<Transaction, "id">): Promise<Transaction | null> => {
+      try {
+        const { data, error: insertError } = await supabase
+          .from("transactions")
+          .insert([newTransaction])
+          .eq("user_id", userId)
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error inserting transaction:", insertError);
+          throw new Error("Failed to add transaction");
+        }
+        return data;
+      } catch (err: unknown) {
+        console.error("Unexpected error adding transaction:", err);
+        if (err instanceof Error) throw err;
+        throw new Error("Unknown error");
+      }
+      
+    }
+    const updateTransaction = async (id: string, updates: Partial<Transaction>): Promise<boolean> => {
+      if (!session) return false;
+
+      try {
+        const { data, error } = await supabase
+          .from("transactions")
+          .update(updates)
+          .eq("id", id)
+          .eq("user_id", userId)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        return !!data;
+      } catch (error) {
+        console.error("Unexpected error updating transaction:", error);
+        if (error instanceof Error) throw error;
+        throw new Error("Unknown error");
+      }
+
+    }
+
   
 
     const transactionsCtx = {
@@ -100,7 +139,9 @@ export const TransactionsProvider = ({children} : {children: ReactNode})=>{
       loading,
       error,
       fetchTransactionById,
-      deleteTransaction
+      deleteTransaction,
+      createTransaction,
+      updateTransaction
     }
 
     return (

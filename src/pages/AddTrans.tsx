@@ -1,15 +1,23 @@
-import { useActionState, useState } from "react";
+import { useActionState, useContext, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaRegSave } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { supabase } from "../lib/supabaseClient";
 import type { Transaction } from "../types/Types";
+import TransactionsContext from "../context/TransactionsContext";
 
 export default function AddTrans() {
   const { session } = useAuth();
-  const [type, setType] = useState<"income" | "expense">("income");
   const navigate = useNavigate();
+  const location = useLocation();
+  const transactionToEdit: Transaction | undefined = location.state?.transactionToEdit;
+  const isEditing = Boolean(transactionToEdit);
+  const [type, setType] = useState<"income" | "expense">(transactionToEdit?.type || "income");
   const userId = session?.user.id || "";
+  const transactionsCtx = useContext(TransactionsContext);
+  const updateTransaction = transactionsCtx?.updateTransaction;
+  const createTransaction = transactionsCtx?.createTransaction;
+  console.log("Transaction to edit:", transactionToEdit);
+  
   const [error, submitAction, isPending] = useActionState(
     async (prevState, formData: FormData) => {
       if (!userId) {
@@ -17,8 +25,7 @@ export default function AddTrans() {
         return new Error("User not logged in");
       }
 
-      try {
-        const newTransaction: Omit<Transaction, "id"> = {
+      const newTransaction: Omit<Transaction, "id"> = {
           user_id: userId,
           type: type,
           amount: parseFloat(String(formData.get("amount") ?? "0")) || 0,
@@ -31,22 +38,24 @@ export default function AddTrans() {
 
         console.log("Inserting transaction:", newTransaction);
 
-        // return after inserting into supabase
-        const { data, error: insertError } = await supabase
-          .from("transactions")
-          .insert([newTransaction])
-          .select()
-          .single();
+      try {
+        // if isEditing is true, will update existing transaction
+        if(isEditing && transactionToEdit && updateTransaction){
+          const success = await updateTransaction(transactionToEdit.id, newTransaction);
+          if(!success) throw new Error("Failed to update transaction");
+          navigate("/transactions");
+          return;
+        }else {
+          // if isEditing is false, will create new transaction
+          if(!isEditing && createTransaction){
+            const data = await createTransaction(newTransaction);
+            if(!data) throw new Error("Failed to create transaction");
+          }
 
-        if (insertError) {
-          console.error("Error inserting transaction:", insertError);
-          return new Error("Failed to add transaction");
+          navigate("/transactions");
+         
         }
-
-        console.log("Transaction added:", data);
-        navigate("/transactions");
-        return data;
-      } catch (err: unknown) {
+      }catch(err: unknown){
         console.error("Unexpected error adding transaction:", err);
         if (err instanceof Error) return err;
         return new Error("Unknown error");
@@ -90,11 +99,11 @@ export default function AddTrans() {
                     type="radio"
                     id="income"
                     name="type"
-                    value="income"
                     checked={type === "income"}
                     onChange={() => setType("income")}
                     className="hidden"
                     disabled={isPending}
+                   
                   />
                   <FaArrowDown className="text-white text-sm" />
                   <span>Income</span>
@@ -116,6 +125,7 @@ export default function AddTrans() {
                     onChange={() => setType("expense")}
                     className="hidden"
                     disabled={isPending}
+                    
                   />
                   <FaArrowUp className="text-white text-sm" />
                   <span>Expense</span>
@@ -140,6 +150,7 @@ export default function AddTrans() {
                   placeholder="0.00"
                   type="number"
                   disabled={isPending}
+                  defaultValue={transactionToEdit?.amount}
                 />
               </div>
             </div>
@@ -157,6 +168,7 @@ export default function AddTrans() {
               name="category"
               required
               disabled={isPending}
+              defaultValue={transactionToEdit?.category}
             >
               <option>Food &amp; Dining</option>
               <option>Transportation</option>
@@ -181,6 +193,7 @@ export default function AddTrans() {
               required
               type="date"
               disabled={isPending}
+              defaultValue={transactionToEdit?.date}
             />
           </div>
           <div>
@@ -197,6 +210,7 @@ export default function AddTrans() {
               placeholder="e.g., Groceries from the market"
               rows={3}
               disabled={isPending}
+              defaultValue={transactionToEdit?.description}
             ></textarea>
           </div>
           <div className="pt-2">

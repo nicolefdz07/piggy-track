@@ -19,6 +19,7 @@ export const BudgetsProvider = ({
   children: React.ReactNode;
 }) => {
   const { session } = useAuth();
+  const userId = session?.user.id || "";
   const [Budgets, setBudgets] = useState<Budget[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +30,7 @@ export const BudgetsProvider = ({
       const { data, error } = await supabase
         .from("budgets")
         .select("*")
-        .eq("user_id", session?.user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -55,6 +56,7 @@ export const BudgetsProvider = ({
       const {data, error} = await supabase
       .from("budgets")
       .insert([budgetData])
+      .eq("user_id", userId)
       .select()
       .single();
 
@@ -70,7 +72,7 @@ export const BudgetsProvider = ({
     if (!session) return false;
 
     try {
-      const { error } = await supabase.from("budgets").delete().eq("id", id);
+      const { error } = await supabase.from("budgets").delete().eq("id", id).eq("user_id", userId);
 
       if (error) throw error;
 
@@ -89,6 +91,7 @@ export const BudgetsProvider = ({
       .from("budgets")
       .update(updates)
       .eq("id", id)
+      .eq("user_id", userId)
       .select()
       .single();
 
