@@ -16,6 +16,7 @@ import { BudgetsProvider } from "./context/BudgetsContext.tsx";
 import RootRedirect from "./routes/RootRedirect.tsx";
 import { AuthContextProvider } from "./context/AuthContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import Reports from "./pages/Reports.tsx";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                   element={<TransactionDetails />}
                 />
                 <Route path="transactions/add" element={<AddTrans />} />
+                <Route path='reports' element={<Reports />}/>
               </Route>
 
               <Route path="/" element={<RootRedirect />} />

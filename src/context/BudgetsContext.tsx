@@ -8,6 +8,8 @@ interface BudgetsContextType {
   loading: boolean;
   error: string | null;
   deleteBudget: (id: string) => Promise<boolean>;
+  updateBudget: (id: string, updates: Partial<Budget>) => Promise<boolean>;
+  createBudget: (budgetData: Omit<Budget, "id">) => Promise<Budget | null>;
 }
 const BudgetsContext = createContext<BudgetsContextType | undefined>(undefined);
 
@@ -46,6 +48,24 @@ export const BudgetsProvider = ({
     }
   }, [session]);
 
+  const createBudget = async (budgetData: Omit<Budget, "id">): Promise<Budget | null>=> {
+    if (!session) return null;
+
+    try {
+      const {data, error} = await supabase
+      .from("budgets")
+      .insert([budgetData])
+      .select()
+      .single();
+
+      if(error) throw error;
+      setBudgets((prevBudgets)=> [...prevBudgets, data]);
+      return data;
+    } catch (error) {
+      console.error("Error creating budget:", error);
+      return null;
+    }
+  }
   const deleteBudget = async (id: string): Promise<boolean> => {
     if (!session) return false;
 
@@ -61,11 +81,35 @@ export const BudgetsProvider = ({
     }
   };
 
+  const updateBudget = async (id: string, updates: Partial<Budget>): Promise<boolean> => {
+    if (!session) return false;
+
+    try {
+      const {data, error} = await supabase
+      .from("budgets")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+      if(error) throw error;
+      setBudgets((prevBudgets)=> prevBudgets.map((budget)=> budget.id === id ? {...budget, ...data} : budget));
+
+      return true;
+    } catch (error) {
+      console.error("Error updating budget:", error);
+      return false;
+    }
+  }
+
+
   const BudgetCtx = {
     Budgets,
     loading,
     error,
-    deleteBudget
+    deleteBudget,
+    updateBudget,
+    createBudget
   };
 
   return (

@@ -2,17 +2,23 @@ import { RiEdit2Line } from "react-icons/ri";
 import { MdAttachMoney } from "react-icons/md";
 import { MdOutlineCategory } from "react-icons/md";
 import { BsCalendar2Event } from "react-icons/bs";
-import { supabase } from "../lib/supabaseClient";
 import type { Budget } from "../types/Types";
 import { useAuth } from "../context/AuthContext";
-import {useActionState} from "react"
-import { useNavigate } from "react-router-dom";
+import {useActionState, useContext} from "react"
+import { useLocation, useNavigate } from "react-router-dom";
+import BudgetsContext from "../context/BudgetsContext";
 
 export default function CreateBudget() {
   const { session } = useAuth();
-
+  const budgetCtx = useContext(BudgetsContext);
+  const location = useLocation();
+  const budgetToEdit: Budget | undefined = location.state?.budget;
+  const isEditing = Boolean(budgetToEdit);
   const userId = session?.user.id || "";
   const navigate = useNavigate();
+  if (!budgetCtx) throw new Error("BudgetsContext must be used inside a provider");
+  const {createBudget,updateBudget} = budgetCtx;
+
 
   const [error, submitAction, isPending] = useActionState(
     async (prevState, formData: FormData) => {
@@ -21,8 +27,7 @@ export default function CreateBudget() {
         return new Error("User not logged in");
       }
 
-      try {
-        const newBudget: Omit<Budget, "id"> = {
+      const newBudget: Omit<Budget, "id"> = {
           user_id: userId,
           name: String(formData.get("name") ?? ""),
           total_amount: parseFloat(String(formData.get("total_amount") ?? "0")) || 0,
@@ -31,22 +36,19 @@ export default function CreateBudget() {
         };
 
         console.log("Inserting budget:", newBudget);
+      try {
+        //  if isEditing is true, will update existing budget
+        if(isEditing && budgetToEdit){
+          const success = await updateBudget(budgetToEdit.id, newBudget);
+          if(!success) throw new Error("Failed to update budget");
 
-        // return after inserting into supabase
-        const { data, error: insertError } = await supabase
-          .from("budgets")
-          .insert([newBudget])
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error inserting budget:", insertError);
-          return new Error("Failed to add budget");
+          // if isEditing is false, will create new budget
+        }else {
+          const data = await createBudget(newBudget);
+          if(!data) throw new Error("Failed to create budget");
         }
-
-        console.log("Budget added:", data);
         navigate("/budget");
-        return data;
+
       } catch (err: unknown) {
         console.error("Unexpected error adding budget:", err);
         if (err instanceof Error) return err;
@@ -60,7 +62,7 @@ export default function CreateBudget() {
     <main className="flex flex-1 items-center justify-center py-12">
       <div className="w-full max-w-2xl space-y-8 rounded-2xl  p-8 shadow-sm dark:bg-background-dark/50">
         <div>
-          <h2 className="text-3xl font-bold text-white">Create New Budget</h2>
+          <h2 className="text-3xl font-bold text-white">{isEditing ? "Edit Budget" : "Create New Budget"}</h2>
           <p className="mt-2 text-sm text-slate-400">
             Set up a new budget to track your spending.
           </p>
@@ -81,6 +83,7 @@ export default function CreateBudget() {
                 </span>
                 <input
                   name="name"
+                  defaultValue={budgetToEdit?.name || ""}
                   className="form-input block w-full rounded-2xl border border-[#129EE4]/30   py-3 pl-10 pr-3 text-slate-900 placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500"
                   id="budget-name"
                   placeholder="e.g., Groceries"
@@ -107,6 +110,7 @@ export default function CreateBudget() {
                   type="number"
                   name="total_amount"
                   disabled={isPending}
+                  defaultValue={budgetToEdit?.total_amount || ""}
                 />
               </div>
             </div>
@@ -128,6 +132,7 @@ export default function CreateBudget() {
                   id="category"
                   name="category"
                   disabled={isPending}
+                  defaultValue={budgetToEdit?.category || ""}
                 >
                   <option>Select a category</option>
                   <option>Food &amp; Dining</option>
@@ -155,6 +160,7 @@ export default function CreateBudget() {
                   id="period"
                   name="period"
                   disabled={isPending}
+                  defaultValue={budgetToEdit?.period || ""}
                 >
                   <option>Select a period</option>
                   <option>Weekly</option>
@@ -189,7 +195,9 @@ export default function CreateBudget() {
               type="submit"
               disabled={isPending}
             >
-              {isPending ? "Creating budget..." : "Create Budget"}
+             
+              {!isEditing && isPending ? "Creating budget..." : isEditing ? "Update Budget" : "Create Budget"}
+              
             </button>
           </div>
         </form>

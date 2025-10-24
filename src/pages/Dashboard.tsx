@@ -59,6 +59,7 @@ export default function Dashboard() {
     }
   }
   useEffect(() => {
+    if (!session?.user?.id) return;
     fetchRecentTransactions();
 
     const channel = supabase
@@ -82,7 +83,7 @@ export default function Dashboard() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [session?.user.id]);
 
   const displayDashTrans = useMemo(() => {
     return recentTransactions.filter((t) => {

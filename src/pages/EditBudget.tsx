@@ -8,20 +8,7 @@ import { useEffect } from "react";
 export default async function EditBudget() {
   const {id} = useParams<{id: string}>();
   const {session} = useAuth();
-
-// useEffect(async () => {
-//   if (!session) return;
-
-//   const { error } = await supabase
-//     .from('budgets')
-//     .update({ name: 'piano' })
-//     .eq('id', 1)
-// }, [])
-
-
-
-
-
+  const userId = session?.user.id || "";
 
 
   return (

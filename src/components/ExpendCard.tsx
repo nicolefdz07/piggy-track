@@ -1,8 +1,10 @@
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
+import type { Budget } from "../types/Types";
 
 export default function ExpendCard({
   type,
+  budget,
   remaining,
   icon,
   total_amount,
@@ -16,7 +18,8 @@ export default function ExpendCard({
   total_amount: number;
   total_spent: number;
   id: string;
-  onDelete: ()=> void;
+  budget: Budget;
+  onDelete: () => void;
 }) {
   const calcWidth = (total_spent / total_amount) * 100;
   return (
@@ -29,7 +32,8 @@ export default function ExpendCard({
             </div>
             <div className="flex-1">
               <div className="flex justify-between">
-                <NavLink to={`/budget/edit/${id}`}>
+                <NavLink to={`/budget/create`}
+                state={{budget}}>
                   <h3 className="text-lg font-bold text-white">{type}</h3>
                 </NavLink>
                 <button onClick={onDelete}>

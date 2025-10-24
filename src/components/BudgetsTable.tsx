@@ -17,7 +17,9 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
   const [selectedBudget, setSelectedBudget] = useState<Budget | null>(null);
   const context = useContext(TransactionsContext);
   const transactions = context?.transactions ?? [];
-  const { handleDeleteBudget} = useDeleteBudget({onCloseModal: ()=> setOpenModal(false)});
+  const { handleDeleteBudget } = useDeleteBudget({
+    onCloseModal: () => setOpenModal(false),
+  });
 
   const spentAmount = (category?: string): number => {
     const cat = (category ?? "").toLowerCase().trim();
@@ -33,7 +35,6 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
         0
       );
   };
-
 
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -62,7 +63,8 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <NavLink to={`/budget/edit/${budgets[0]?.id}`}>
+                      <NavLink to='/budget/create' 
+                      state={{budget: budgets[0]}}>
                         <h3 className="text-lg font-bold text-white">
                           {budgets[0]?.name}
                         </h3>
@@ -132,18 +134,23 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
 
                         return (
                           <>
-                          {percent >= 100 && (
-                            <RiErrorWarningLine className="text-red-500 text-3xl" />
-
-                          )}
+                            {percent >= 100 && (
+                              <RiErrorWarningLine className="text-red-500 text-3xl" />
+                            )}
                             {percent >= 80 && percent < 100 && (
                               <CiWarning className="text-yellow-300 text-3xl" />
                             )}
                             <p className="text-yellow-500 text-sm">
-                              {percent >= 80 && percent < 100 ? "You are too close to your limit!" : ""}
-                              
+                              {percent >= 80 && percent < 100
+                                ? "You are too close to your limit!"
+                                : ""}
                             </p>
-                            <p className="text-red-500 text-sm"> {percent >= 100 ? "You have exceeded your limit!" : ""}</p>
+                            <p className="text-red-500 text-sm">
+                              {" "}
+                              {percent >= 100
+                                ? "You have exceeded your limit!"
+                                : ""}
+                            </p>
                           </>
                         );
                       })()}
@@ -171,6 +178,7 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
             id={budget.id}
             key={budget.id}
             type={budget.name}
+            budget={budget}
             onDelete={() => {
               setSelectedBudget(budget);
               setOpenModal(true);
