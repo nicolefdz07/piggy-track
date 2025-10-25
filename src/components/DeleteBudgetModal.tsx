@@ -49,7 +49,7 @@ export default function DeleteBudgetModal({
       className="bg-[#1A2830] rounded-xl shadow-2xl w-full max-w-md mx-auto my-auto backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       <div className="p-6 text-center">
-        <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-500">
+        <div className="w-16 h-16 mx-auto flex items-center justify-center rounded-full bg-red-900/30 text-red-500">
           <RiDeleteBin6Line className="text-3xl text-red-500" />
         </div>
         <h3 className="mt-4 text-xl font-bold text-white">Delete Budget</h3>

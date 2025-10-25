@@ -60,12 +60,6 @@ export default function TransactionsTable({
             {transaction.type === "expense" ? "-" : "+"}
             {formatCurrency(transaction.amount)}
           </td>
-
-          <td className="p-4 text-center">
-            <button className="p-1 rounded-full text-gray-400 hover:text-primary hover:bg-primary/20">
-              …
-            </button>
-          </td>
         </tr>
       ))}
     </tbody>

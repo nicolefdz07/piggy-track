@@ -1,21 +1,21 @@
 import type { Transaction } from "../types/Types";
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { useAuth } from "../context/AuthContext";
+import { useContext, useMemo} from "react";
+
 import TransactionsTable from "../components/TransactionsTable";
 import { NavLink, useSearchParams } from "react-router-dom";
+import TransactionsContext from "../context/TransactionsContext";
 
 export default function Transactions() {
-  const { session } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const transactionsCtx = useContext(TransactionsContext);
+  const transactionsFromCtx = transactionsCtx?.transactions || [];
 
   type FilterType = Transaction["type"] | "all";
   const type: string = searchParams.get("type") || "all";
   const query: string = searchParams.get("query") || "";
 
-  const displayTrans = useMemo(() => {
-    return transactions.filter((t) => {
+  const displayTransactions = useMemo(() => {
+    return transactionsFromCtx.filter((t) => {
       const matchType = type === "all" || t.type === type;
       const matchQuery =
         query === "" ||
@@ -23,7 +23,7 @@ export default function Transactions() {
         t.category.toLowerCase().includes(query.toLowerCase());
       return matchType && matchQuery;
     });
-  }, [transactions, type, query]);
+  }, [transactionsFromCtx, type, query]);
 
   //  Cambiar filtro al hacer clic
   function handleTypeChange(newType: FilterType) {
@@ -35,6 +35,7 @@ export default function Transactions() {
     }
     setSearchParams(params);
   }
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
     if (e.target.value === "") {
@@ -45,23 +46,6 @@ export default function Transactions() {
     setSearchParams(params);
   };
 
-  async function fetchTransactions() {
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("user_id", session?.user.id)
-      .order("date", { ascending: false });
-
-    if (error) throw error;
-    setTransactions(data ?? []);
-    console.log("data:", data);
-  }
-
-  useEffect(() => {
-    if (session) {
-      fetchTransactions();
-    }
-  }, [session]);
 
   return (
     <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -70,14 +54,14 @@ export default function Transactions() {
           <div>
             <h2 className="text-3xl font-bold text-white">All Transactions</h2>
             <p className="text-gray-400">
-              Manage your transactions for easier tracking. fácil.
+              Manage your transactions for easier tracking. 
             </p>
           </div>
         </div>
         <div className="bg-background-light dark:bg-background-dark p-4 rounded-lg">
           <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="relative flex-grow">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-light dark:text-muted-dark"></span>
+              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-dark dark:text-muted-dark"></span>
               <input
                 value={query}
                 onChange={handleSearchChange}
@@ -111,7 +95,7 @@ export default function Transactions() {
                 onClick={() => handleTypeChange("expense")}
                 className={`px-4 py-2 rounded-2xl text-sm font-medium ${
                   type === "expense"
-                    ? "bg-[#129EE4] text-white"
+                    ? "bg-red-500 text-white"
                     : "bg-[#1A2830] text-white hover:bg-primary/20 dark:hover:bg-primary/30"
                 }`}
               >
@@ -135,17 +119,15 @@ export default function Transactions() {
                   <th className="p-4 text-lg font-semibold text-gray-300 text-right">
                     Amount
                   </th>
-                  <th className="p-4 text-lg font-semibold text-gray-300 text-center">
-                    Actions
-                  </th>
+                  
                 </tr>
               </thead>
-              <TransactionsTable transactions={displayTrans} />
+              <TransactionsTable transactions={displayTransactions} />
             </table>
             <div className="flex justify-start mt-30  ">
               <NavLink
                 to="/transactions/add"
-                className="w-1/2 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
+                className="w-1/4 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
               >
                 New Transaction
               </NavLink>

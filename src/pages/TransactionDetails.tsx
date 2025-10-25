@@ -40,7 +40,7 @@ export default function TransactionDetails() {
             <span className="mx-2">/</span>
             <span>Transaction Details</span>
           </p>
-          <h1 className="text-3xl font-bold mt-2 text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-bold mt-2 text-white dark:text-white">
             Transaction Details
           </h1>
         </div>
@@ -49,7 +49,7 @@ export default function TransactionDetails() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 border-b border-slate-200 dark:border-slate-800 pb-6">
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-gray-400 ">
                     Amount
                   </p>
                   <p className="text-2xl font-bold text-[#129EE4]">
@@ -57,35 +57,35 @@ export default function TransactionDetails() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-sm text-gray-400">
                     Date
                   </p>
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                  <p className="font-semibold text-white ">
                     {new Date(transaction?.date || "").toLocaleDateString()}
                   </p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-gray-400">
                   Category
                 </p>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                <p className="font-semibold text-white">
                   {transaction?.category}
                 </p>
               </div>
               <div className="md:col-span-3">
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-gray-400">
                   Description
                 </p>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                <p className="font-semibold text-white">
                   {transaction?.description}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-gray-400">
                   Type
                 </p>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                <p className="font-semibold text-white">
                   {transaction?.type}
                 </p>
               </div>
@@ -96,7 +96,7 @@ export default function TransactionDetails() {
               to={`/transactions/add`}
               state={{ transactionToEdit: transaction }}
             >
-              <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-2xl bg-[#243641] text-white hover:bg-slate-700 transition-colors">
                 <span className="material-symbols-outlined text-base">
                   <MdOutlineModeEdit className="text-white" />
                 </span>

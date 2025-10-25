@@ -1,21 +1,16 @@
-import { supabase } from "../lib/supabaseClient";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext,  useMemo } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import DashboardTable from "../components/DashboardTable";
-import type { RecentTransaction, Transaction } from "../types/Types";
 import TransactionsContext from "../context/TransactionsContext";
 import { formatCurrency } from "../utils/formatCurrency";
-import type { FilterType, FilterCategory, FilterDate } from "../types/Types";
+import type {  FilterCategory, FilterDate } from "../types/Types";
 
 export default function Dashboard() {
-  const { session } = useAuth();
+
   const context = useContext(TransactionsContext);
   const transactions = context?.transactions || [];
-  const [recentTransactions, setRecentTransactions] = useState<
-    RecentTransaction[]
-  >([]);
-
+  const recentTransactions = context?.recentTransactions || [];
+  
   const income: number = transactions
     .filter((tx) => tx.type === "income")
     .reduce((acc: number, tx) => acc + tx.amount, 0);
@@ -29,61 +24,7 @@ export default function Dashboard() {
   const type: string = searchParams.get("type") || "all";
   const date: FilterDate = searchParams.get("date") || "all";
 
-  async function fetchRecentTransactions(): Promise<void> {
-    try {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select(
-          `
-    date,
-    description,
-    category,
-    amount,
-    type,
-    id
-    `
-        )
-        .eq("user_id", session?.user.id)
-        .order("created_at", {
-          ascending: false,
-        })
-        .limit(6);
 
-      if (error) {
-        throw new Error(error.message);
-      }
-      setRecentTransactions(data as RecentTransaction[]);
-      console.log("recent transactions: ", data);
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
-  }
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    fetchRecentTransactions();
-
-    const channel = supabase
-      .channel("transactions_changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "transactions",
-        },
-        (payload) => {
-          // Action
-          fetchRecentTransactions();
-          console.log("payload", payload.new);
-        }
-      )
-
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [session?.user.id]);
 
   const displayDashTrans = useMemo(() => {
     return recentTransactions.filter((t) => {

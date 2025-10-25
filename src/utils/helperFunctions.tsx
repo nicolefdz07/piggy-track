@@ -46,6 +46,6 @@ export const spentAmount = ({ category, transactions }: { category?: string; tra
 
   export const calcWidthPercentage = (spent: number, total: number): string => {
     if (total === 0) return "0%";
-    const percentage = Number((spent / total) * 100);
+    const percentage = Number((spent / total) * 100).toFixed(2);
     return `${percentage}%`;
   };

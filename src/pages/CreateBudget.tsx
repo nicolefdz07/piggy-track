@@ -63,7 +63,7 @@ export default function CreateBudget() {
       <div className="w-full max-w-2xl space-y-8 rounded-2xl  p-8 shadow-sm dark:bg-background-dark/50">
         <div>
           <h2 className="text-3xl font-bold text-white">{isEditing ? "Edit Budget" : "Create New Budget"}</h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="mt-2 text-lg text-slate-400">
             Set up a new budget to track your spending.
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function CreateBudget() {
                 <input
                   name="name"
                   defaultValue={budgetToEdit?.name || ""}
-                  className="form-input block w-full rounded-2xl border border-[#129EE4]/30   py-3 pl-10 pr-3 text-slate-900 placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500"
+                  className="form-input block w-full rounded-2xl border border-[#129EE4]/30 py-3 pl-10 pr-3 text-white placeholder:text-slate-400 "
                   id="budget-name"
                   placeholder="e.g., Groceries"
                   type="text"
@@ -94,7 +94,7 @@ export default function CreateBudget() {
             </div>
             <div className="space-y-2">
               <label
-                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="text-sm font-medium text-slate-300 "
                 htmlFor="total-amount"
               >
                 Total Amount
@@ -104,7 +104,9 @@ export default function CreateBudget() {
                   <MdAttachMoney className="h-5 w-5 text-slate-400" />
                 </span>
                 <input
-                  className="form-input block w-full rounded-2xl border border-[#129EE4]/30 bg-background-light py-3 pl-10 pr-3 text-slate-900 placeholder:text-slate-400 focus:border-[#129EE4] border-[#129EE4]/50 dark:bg-background-dark dark:text-white dark:placeholder:text-slate-500 focus:outline-none"
+                  className="form-input block w-full rounded-2xl border border-[#129EE4]/30 bg-background-light py-3 pl-10 pr-3 text-slate-900 
+                  text-white 
+                  placeholder:text-slate-400 focus:border-[#129EE4] border-[#129EE4]/50  focus:outline-none"
                   id="total_amount"
                   placeholder="e.g., 500"
                   type="number"
@@ -118,7 +120,7 @@ export default function CreateBudget() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="space-y-2">
               <label
-                className="text-sm font-medium text-slate-700 dark:text-slate-300"
+                className="text-sm font-medium text-slate-300"
                 htmlFor="category"
               >
                 Category
@@ -128,7 +130,7 @@ export default function CreateBudget() {
                   <MdOutlineCategory className="h-5 w-5 text-slate-400" />
                 </span>
                 <select
-                  className="form-select block w-full appearance-none rounded-2xl border border-[#129EE4]/30 bg-background-light py-3 pl-10 pr-10 text-slate-900 focus:border-[#129EE4] dark:border-[#129EE4]/50 dark:bg-background-dark dark:text-white focus-outline-none"
+                  className="form-select block w-full appearance-none rounded-2xl border border-[#129EE4]/30 bg-background-light py-3 pl-10 pr-10 text-white focus:border-[#129EE4] focus:outline-none"
                   id="category"
                   name="category"
                   disabled={isPending}
@@ -156,7 +158,8 @@ export default function CreateBudget() {
                   <BsCalendar2Event className="h-5 w-5 text-slate-400" />
                 </span>
                 <select
-                  className="form-select block w-full appearance-none rounded-2xl border border-[#129EE4]/30 py-3 pl-10 pr-10 text-slate-900 focus:border-[#129EE4] dark:border-[#129EE4]/50  focus-outline-none"
+                  className="form-select block w-full appearance-none rounded-2xl border border-[#129EE4]/30 py-3 pl-10 pr-10 
+                  text-white focus:border-[#129EE4]   focus-outline-none"
                   id="period"
                   name="period"
                   disabled={isPending}

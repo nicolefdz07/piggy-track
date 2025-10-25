@@ -75,7 +75,7 @@ export const BudgetsProvider = ({
       const { error } = await supabase.from("budgets").delete().eq("id", id).eq("user_id", userId);
 
       if (error) throw error;
-
+      setBudgets((prev) => prev.filter((b) => String(b.id) !== String(id)));
       return true;
     } catch (err) {
       console.error("Error deleting transaction:", err);
@@ -104,6 +104,34 @@ export const BudgetsProvider = ({
       return false;
     }
   }
+// real timee subscription
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetchBudgets();
+    
+
+    const channel = supabase
+      .channel("budget_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "budgets",
+        },
+        (payload) => {
+          // Action
+          fetchBudgets();
+          console.log("payload", payload.new);
+        }
+      )
+
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user.id]);
 
 
   const BudgetCtx = {
