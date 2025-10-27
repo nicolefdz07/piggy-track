@@ -11,7 +11,7 @@ import Transactions from "./pages/Transactions.tsx";
 import TransactionDetails from "./pages/TransactionDetails.tsx";
 import AddTrans from "./pages/AddTrans.tsx";
 import CreateBudget from "./pages/CreateBudget.tsx";
-import EditBudget from "./pages/EditBudget.tsx";
+
 import { BudgetsProvider } from "./context/BudgetsContext.tsx";
 import RootRedirect from "./routes/RootRedirect.tsx";
 import { AuthContextProvider } from "./context/AuthContext.tsx";
@@ -36,7 +36,7 @@ function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="budget" element={<Budget />} />
                 <Route path="budget/create" element={<CreateBudget />} />
-                <Route path="budget/edit/:id" element={<EditBudget />} />
+                
                 <Route path="transactions" element={<Transactions />} />
                 <Route
                   path="transactions/details/:id"

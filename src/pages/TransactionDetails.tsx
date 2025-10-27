@@ -115,7 +115,6 @@ export default function TransactionDetails() {
           </div>
         </div>
         <DeleteTransModal
-          id={id!}
           open={openModal}
           onClose={() => setOpenModal(false)}
           deleteFunc={handleDeleteTrans}

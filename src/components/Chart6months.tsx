@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import TransactionsContext from "../context/TransactionsContext";
-import { TrendingUp } from "lucide-react";
+
 
 import {
   Card,
@@ -73,7 +73,6 @@ export function ChartBarDefault() {
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 font-medium items-center">
-          {/* Trending up by 5.2% this month <TrendingUp className="h-4 w-4" /> */}
         </div>
         <div className="text-muted-foreground">
           Showing expenses for the last 6 months.

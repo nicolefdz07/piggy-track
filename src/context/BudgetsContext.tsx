@@ -119,11 +119,26 @@ export const BudgetsProvider = ({
           schema: "public",
           table: "budgets",
         },
-        (payload) => {
-          // Action
-          fetchBudgets();
-          console.log("payload", payload.new);
+        (payload: any) => {
+        console.log("Realtime payload:", payload);
+
+        // Manejar según tipo de evento (use eventType from the payload)
+        const event = payload.eventType ?? payload.event;
+
+        if (event === "INSERT") {
+          // Agrega solo el nuevo budget al estado
+          setBudgets((prev) => [...prev, payload.new]);
+        } else if (event === "UPDATE") {
+          // Actualiza solo el budget modificado
+          setBudgets((prev) =>
+            prev.map((b) => (b.id === payload.new.id ? payload.new : b))
+          );
+        } else if (event === "DELETE") {
+          // Remueve el budget eliminado
+          setBudgets((prev) => prev.filter((b) => b.id !== payload.old.id));
         }
+      }
+        
       )
 
       .subscribe();

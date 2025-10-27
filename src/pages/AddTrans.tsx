@@ -19,7 +19,7 @@ export default function AddTrans() {
   console.log("Transaction to edit:", transactionToEdit);
   
   const [error, submitAction, isPending] = useActionState(
-    async (prevState, formData: FormData) => {
+    async (_prevState: Error | null | undefined, formData: FormData) => {
       if (!userId) {
         console.error("No user logged in");
         return new Error("User not logged in");
@@ -226,6 +226,11 @@ export default function AddTrans() {
             </button>
           </div>
         </form>
+        {error && (
+      <div role="alert" className="text-red-500 text-sm mt-4">
+        {error.message}
+      </div>
+    )}
       </div>
     </main>
   );

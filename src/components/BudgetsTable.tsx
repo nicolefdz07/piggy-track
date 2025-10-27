@@ -175,7 +175,6 @@ export default function BudgetsTable({ budgets }: { budgets: Budget[] }) {
       <section className="grid md:grid-cols-2 gap-6 mt-8">
         {budgets.slice(1).map((budget) => (
           <ExpendCard
-            id={budget.id}
             key={budget.id}
             type={budget.name}
             budget={budget}

@@ -6,14 +6,12 @@ interface DeleteTransModalProps {
   open: boolean;
   deleteFunc: () => void;
   onClose: () => void;
-  id: string;
 }
 
 export default function DeleteTransModal({
   open,
   deleteFunc,
   onClose,
-  id,
 }: DeleteTransModalProps) {
   const dialog = useRef<HTMLDialogElement>(null);
 

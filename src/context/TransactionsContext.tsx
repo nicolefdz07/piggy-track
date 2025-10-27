@@ -174,7 +174,7 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  // real timee subscription
+  // real time  subscription
   useEffect(() => {
     if (!session?.user?.id) return;
     fetchRecentTransactions();
@@ -189,11 +189,35 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
           schema: "public",
           table: "transactions",
         },
-        (payload) => {
-          // Action
-          fetchRecentTransactions();
+        (payload: any) => {
+        console.log("Realtime payload:", payload);
+
+        // normalize event name (supabase payloads can use different property names)
+        const event = payload.eventType ?? payload.event ?? payload.type;
+
+        if (event === "INSERT") {
+          // Agrega solo la nueva transacción al estado general
+          const newTx = payload.new as Transaction;
+          setTransactions(prev => [...prev, newTx]);
+
           
+          setRecentTransactions(prev => [newTx as RecentTransaction, ...prev].slice(0, 6));
+        } else if (event === "UPDATE") {
+          // Actualiza solo la transacción modificada
+          const newTx = payload.new as Transaction;
+          setTransactions(prev =>
+            prev.map(tx => (tx.id === newTx.id ? newTx : tx))
+          );
+          setRecentTransactions(prev =>
+            prev.map(tx => (tx.id === newTx.id ? (newTx as RecentTransaction) : tx))
+          );
+        } else if (event === "DELETE") {
+          // Elimina la transacción eliminada
+          const oldTx = payload.old as Transaction;
+          setTransactions(prev => prev.filter(tx => tx.id !== oldTx.id));
+          setRecentTransactions(prev => prev.filter(tx => tx.id !== oldTx.id));
         }
+      }
       )
 
       .subscribe();

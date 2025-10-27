@@ -7,7 +7,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [error, submitAction, isPending] = useActionState(
-    async (prevState, formData: FormData) => {
+    async (_prevState: Error | null | undefined, formData: FormData) => {
       const email: string = formData.get("email") as string;
       const password: string = formData.get("password") as string;
       const confirmPassword: string = formData.get("confirmPassword") as string;

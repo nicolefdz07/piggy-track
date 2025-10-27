@@ -9,7 +9,6 @@ export default function ExpendCard({
   icon,
   total_amount,
   total_spent,
-  id,
   onDelete
 }: {
   type: string;
@@ -17,7 +16,6 @@ export default function ExpendCard({
   icon?: React.ReactNode;
   total_amount: number;
   total_spent: number;
-  id: string;
   budget: Budget;
   onDelete: () => void;
 }) {

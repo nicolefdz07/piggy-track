@@ -21,7 +21,7 @@ export default function CreateBudget() {
 
 
   const [error, submitAction, isPending] = useActionState(
-    async (prevState, formData: FormData) => {
+    async (_prevState: Error | null | undefined, formData: FormData) => {
       if (!userId) {
         console.error("No user logged in");
         return new Error("User not logged in");
@@ -204,6 +204,14 @@ export default function CreateBudget() {
             </button>
           </div>
         </form>
+        {error && (
+          <p
+            id="budget-error"
+            className="mt-4 text-center text-sm font-medium text-red-500"
+          >
+            {error.message}
+          </p>
+        )}
       </div>
     </main>
   );
