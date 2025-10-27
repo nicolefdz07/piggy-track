@@ -124,10 +124,10 @@ export default function Transactions() {
               </thead>
               <TransactionsTable transactions={displayTransactions} />
             </table>
-            <div className="flex justify-start mt-30  ">
+            <div className="flex justify-start mt-12  ">
               <NavLink
                 to="/transactions/add"
-                className="w-1/4 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center "
+                className="block w-full md:inline-block md:w-1/4 text-white bg-[#13A4EC] font-bold px-4 rounded-2xl hover:bg-[#13A4EC]/50 py-3 text-center"
               >
                 New Transaction
               </NavLink>

@@ -46,7 +46,7 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) throw error;
       setTransactions(data ?? []);
-      console.log(data);
+      
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -192,7 +192,7 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
         (payload) => {
           // Action
           fetchRecentTransactions();
-          console.log("payload", payload.new);
+          
         }
       )
 

@@ -120,28 +120,7 @@ export default function TransactionDetails() {
           onClose={() => setOpenModal(false)}
           deleteFunc={handleDeleteTrans}
         />
-        {/* <div className="mt-10 bg-[#101C22] rounded-lg shadow-sm border border-slate-800 p-6 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-            <span className="">
-              <MdWarningAmber className="text-red-400 text-2xl"/>
-            </span>
-          </div>
-          <h2 className="text-xl font-bold mt-4 text-slate-900 dark:text-white">
-            Confirm Deletion
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 mt-2">
-            Are you sure you want to delete this transaction? This action cannot
-            be undone.
-          </p>
-          <div className="mt-6 flex justify-center gap-4">
-            <button className="px-6 py-2 text-sm font-bold rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 hover:bg-slate-200 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 transition-colors">
-              Cancel
-            </button>
-            <button className="px-6 py-2 text-sm font-bold rounded-2xl bg-[#129EE4] hover:bg-[#129EE4]/90 text-white transition-colors">
-              Yes, Delete
-            </button>
-          </div>
-        </div> */}
+       
       </div>
     </main>
   );

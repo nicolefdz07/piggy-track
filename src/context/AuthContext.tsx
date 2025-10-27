@@ -33,7 +33,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         if (error) throw error;
 
         // if success
-        console.log(data.session);
+        
         setSession(data.session);
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -48,7 +48,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     // 2) listen for changes in auth state (.onAuthStateChange())
     supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      console.log("session changed", session);
+      
     });
   }, []);
 
@@ -69,7 +69,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return { success: false, error: error.message };
       }
       // success
-      console.log("supabase signIn success:", data);
+      
       return { success: true, data: data };
     } catch (error: unknown) {
       // unexpected error
@@ -125,7 +125,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return { success: false, error: error.message };
       }
       // success
-      console.log("supabase sign-up success:", data);
+      
       return { success: true, data: data };
     } catch (error: unknown) {
       // unexpected error

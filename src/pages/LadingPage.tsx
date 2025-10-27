@@ -5,6 +5,7 @@ import HeaderLanding from "@/components/HeaderLanding";
 import { NavLink } from "react-router-dom";
 import Footer from "@/components/Footer";
 
+
 export default function LandingPage() {
   return (
     <>
