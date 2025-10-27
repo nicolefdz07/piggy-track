@@ -17,6 +17,7 @@ import RootRedirect from "./routes/RootRedirect.tsx";
 import { AuthContextProvider } from "./context/AuthContext.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import Reports from "./pages/Reports.tsx";
+import LandingPage from "./pages/LadingPage.tsx";
 
 function App() {
   return (
@@ -42,11 +43,12 @@ function App() {
                   element={<TransactionDetails />}
                 />
                 <Route path="transactions/add" element={<AddTrans />} />
-                <Route path='reports' element={<Reports />}/>
+                <Route path="reports" element={<Reports />} />
               </Route>
 
               <Route path="/" element={<RootRedirect />} />
               <Route path="signin" element={<Login />} />
+              <Route path="landing" element={<LandingPage />} />
               <Route path="signup" element={<Register />} />
             </Routes>
           </BrowserRouter>

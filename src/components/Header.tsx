@@ -9,7 +9,7 @@ import { NavLink } from "react-router-dom";
 export default function Header() {
   const { signOutUser } = useAuth();
   const Navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const handleSignOut = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

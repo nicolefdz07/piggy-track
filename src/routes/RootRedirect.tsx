@@ -7,5 +7,5 @@ export default function RootRedirect(){
   if(session=== undefined){
     return <div>Loading...</div>
   }
-  return session ? <Navigate to='/dashboard'/> : <Navigate to='/signin'/>
+  return session ? <Navigate to='/dashboard'/> : <Navigate to='/landing'/>
 }

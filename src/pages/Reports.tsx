@@ -1,5 +1,6 @@
 import { ChartPieExpenses } from "@/components/ChartCategory";
 import { ChartBarDefault } from "../components/Chart6months";
+import { ChartAreaDefault } from "@/components/ChartIncome";
 
 export default function Reports() {
   return (
@@ -16,6 +17,7 @@ export default function Reports() {
         </div>
         {/* Aquí pones tu chart */}
         <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
+          <ChartAreaDefault />
           <ChartBarDefault />
           <ChartPieExpenses />
         </div>

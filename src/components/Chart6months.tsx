@@ -46,7 +46,7 @@ export function ChartBarDefault() {
 
   const chartData = last6Months.map((m) => ({
     month: m.month,
-    total: m.total,
+    total:  m.total,
   }));
 
   return (

@@ -112,6 +112,8 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error inserting transaction:", insertError);
         throw new Error("Failed to add transaction");
       }
+      setTransactions(prev=> [...prev, data as Transaction]);
+      setRecentTransactions(prev=> [...prev, data as RecentTransaction]);
       return data;
     } catch (err: unknown) {
       console.error("Unexpected error adding transaction:", err);
