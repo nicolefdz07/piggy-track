@@ -51,7 +51,7 @@ export default function Login() {
           <FaPiggyBank className="text-[#13A4EC] text-4xl" />
         </div>
         <h1 className="text-3xl font-bold tracking-wide text-slate-100">
-          Ahorra’o
+          SpendWise
         </h1>
         <p className="text-subet-light mt-1 text-slate-300">
           Sign in to your account

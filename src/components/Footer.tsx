@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="flex flex-col items-center gap-8 py-10 text-center border-t border-white/10 mt-10">
       <p className="text-white/60 text-sm font-normal leading-normal">
-        © 2025 PiggyTrack. All rights reserved.
+        © 2025 SpendWise. All rights reserved.
       </p>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-x-8 ">
         <p className="text-white/60 hover:text-white transition-colors text-sm font-normal leading-normal">

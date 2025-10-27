@@ -30,7 +30,7 @@ export default function Header() {
           {/* Brand */}
           <NavLink to="/dashboard" className="flex items-center gap-2">
             <FaPiggyBank className="text-4xl text-[#13A4EC] bg-[#10374A] p-2 rounded-xl" />
-            <span className="font-medium text-lg hidden sm:inline">Ahorra’o</span>
+            <span className="font-medium text-lg hidden sm:inline">SpendWise</span>
           </NavLink>
 
           {/* Desktop nav */}
