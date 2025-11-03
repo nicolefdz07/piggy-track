@@ -1,5 +1,3 @@
- # SpendWise
-
 SpendWise is a compact personal finance app to track transactions, create budgets and view reports. Built with TypeScript and Supabase for fast development and realtime sync.
 
 ## Key features
@@ -41,5 +39,3 @@ SpendWise is a compact personal finance app to track transactions, create budget
 ## Security
 
 - Remove any committed `.env` and rotate exposed keys immediately.
-
- 

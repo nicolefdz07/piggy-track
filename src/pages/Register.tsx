@@ -1,6 +1,6 @@
+import { useActionState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useActionState } from "react";
 
 export default function Register() {
   const { signUpNewUser } = useAuth();
@@ -12,23 +12,32 @@ export default function Register() {
       const password: string = formData.get("password") as string;
       const confirmPassword: string = formData.get("confirmPassword") as string;
 
-      if (password === confirmPassword) {
-        const {
-          success,
-          data,
-          error: signUpError,
-        } = await signUpNewUser(email, password);
+      // Basic client-side validation
+      if (!email || !password || !confirmPassword) {
+        return new Error("Please fill out all fields.");
+      }
 
-        if (signUpError) {
-          return new Error(signUpError);
-        }
+      if (password !== confirmPassword) {
+        return new Error("Passwords do not match.");
+      }
 
-        if (success && data?.session) {
-          navigate("/dashboard");
-          return null;
-        }
+      const {
+        success,
+        data,
+        error: signUpError,
+      } = await signUpNewUser(email, password);
+
+      if (signUpError) {
+        return new Error(signUpError);
+      }
+
+      if (success && data?.session) {
+        navigate("/dashboard");
         return null;
       }
+
+      // safety net
+      return new Error("Unable to sign up. Please try again.");
     },
     null
   );
@@ -87,7 +96,7 @@ export default function Register() {
               type="submit"
               className="w-full flex justify-center py-3  px-4 border border-transparent rounded-2xl text-sm font-bold text-white bg-[#129EE4] hover:bg-[#0f8fd6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#129EE4]"
             >
-              {isPending ? 'Signing Up' : 'Sign Up'}
+              {isPending ? "Signing Up" : "Sign Up"}
             </button>
           </div>
         </form>

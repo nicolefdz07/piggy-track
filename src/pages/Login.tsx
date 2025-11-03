@@ -6,10 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useActionState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// type FormData = {
-//   email: string;
-//   password: string;
-// }
+
 export default function Login() {
    const {signInUser} = useAuth();
    const navigate = useNavigate();
@@ -21,6 +18,10 @@ export default function Login() {
       const email: string = formData.get("email") as string;
       const password: string = formData.get("password") as string;
    
+    // Basic client-side validation
+    if (!email || !password) {
+      return new Error("Please enter both email and password.");
+    }
     
     //2.  Call our signIn function  
       const {
@@ -28,12 +29,12 @@ export default function Login() {
         data,
         error: signInError,
       } = await signInUser(email, password);
-    // 3. Handle known errors (return error)
-    if(signInError){
-      throw new Error(signInError);
+    // 3. Handle known errors (return error so UI can show it)
+    if (signInError) {
+      return new Error(signInError);
     }
     // 4.handle success (redirect, return null)
-    if(success && data?.session){
+    if (success && data?.session) {
       // Navigate to dashboard
       navigate("/dashboard");
       return null;
